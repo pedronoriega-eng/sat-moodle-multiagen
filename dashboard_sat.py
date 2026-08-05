@@ -329,25 +329,10 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
     # Filtrar trazabilidad según el sidebar
     df_trazabilidad_filtered = df_trazabilidad[df_trazabilidad["Módulo / Recurso"].isin(filtro_modulo)]
     
+    # FILA SUPERIOR: GRÁFICOS Y FICHA DOCENTE
     col_main_left, col_main_right = st.columns([7, 5])
 
     with col_main_left:
-        st.markdown("""
-        <div class="panel-box">
-            <div class="panel-header">📜 Trazabilidad Cronológica de Acciones e Interacciones Docente</div>
-        """, unsafe_allow_html=True)
-        
-        st.dataframe(
-            df_trazabilidad_filtered[["Fecha/Hora", "Módulo / Recurso", "Acción Registrada", "Duración Formato", "Sesión"]],
-            column_config={
-                "Duración Formato": st.column_config.TextColumn("⏱️ Duración"),
-                "Sesión": st.column_config.TextColumn("🟢 Estado Sesión")
-            },
-            use_container_width=True,
-            height=260
-        )
-        st.markdown("</div>", unsafe_allow_html=True)
-
         # Gráfico de barras de tiempo por acción
         st.markdown("""
         <div class="panel-box">
@@ -367,7 +352,7 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             font=dict(family="Plus Jakarta Sans, sans-serif", color="#0f172a"),
-            height=250,
+            height=320,
             margin=dict(l=0, r=20, t=10, b=10)
         )
         st.plotly_chart(fig_bar, use_container_width=True)
@@ -406,11 +391,28 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             font=dict(family="Plus Jakarta Sans, sans-serif", color="#0f172a"),
-            height=250,
+            height=200,
             margin=dict(l=0, r=0, t=10, b=10)
         )
         st.plotly_chart(fig_donut, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
+
+    # FILA INFERIOR COMPLETA (ANCHO TOTAL): TABLA DE TRAZABILIDAD 100% DESPLEGADA
+    st.markdown("""
+    <div class="panel-box">
+        <div class="panel-header">📜 Trazabilidad Cronológica de Acciones e Interacciones Docente (Completa)</div>
+    """, unsafe_allow_html=True)
+
+    st.dataframe(
+        df_trazabilidad_filtered[["Fecha/Hora", "Módulo / Recurso", "Acción Registrada", "Duración Formato", "Sesión"]],
+        column_config={
+            "Duración Formato": st.column_config.TextColumn("⏱️ Duración de la Acción"),
+            "Sesión": st.column_config.TextColumn("🟢 Estado Sesión")
+        },
+        use_container_width=True,
+        hide_index=True
+    )
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
 # VISTA 2: ALERTAS ESTUDIANTILES (COHORTE)
