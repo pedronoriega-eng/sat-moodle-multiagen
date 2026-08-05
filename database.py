@@ -49,10 +49,12 @@ class DatabaseManager:
         try:
             req_url = f"{self.rest_url}/estudiantes"
             data_bytes = json.dumps([estudiante_data]).encode('utf-8')
+            headers = self._headers()
+            headers["Prefer"] = "resolution=merge-duplicates,return=representation"
             req = urllib.request.Request(
                 req_url,
                 data=data_bytes,
-                headers=self._headers(prefer="resolution=merge-duplicates,return=representation"),
+                headers=headers,
                 method="POST"
             )
             with urllib.request.urlopen(req) as resp:
