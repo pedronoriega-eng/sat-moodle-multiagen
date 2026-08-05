@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 120" width="100%" height="100%">
+  <!-- Icon Symbol -->
+  <g transform="translate(10, 10)">
+    <!-- Orange U-shaped container -->
+    <path d="M 15 50 C 15 85, 35 100, 50 100 C 65 100, 85 85, 85 50 L 85 30 L 68 30 L 68 50 C 68 70, 60 82, 50 82 C 40 82, 32 70, 32 50 L 32 30 L 15 30 Z" fill="#e65100" />
+    <!-- White inner cutout -->
+    <path d="M 38 48 C 38 65, 43 72, 50 72 C 57 72, 62 65, 62 48 L 62 30 L 38 30 Z" fill="#ffffff" />
+    <!-- Black Outer Ring -->
+    <circle cx="50" cy="35" r="28" fill="none" stroke="#111111" stroke-width="7" />
+    <!-- Green Center Dot -->
+    <circle cx="50" cy="35" r="13" fill="#10b981" />
+  </g>
+  
+  <!-- Text Section -->
+  <g transform="translate(115, 20)">
+    <!-- TECNOLÓGICA DEL ORIENTE -->
+    <text x="0" y="42" font-family="'Plus Jakarta Sans', 'Segoe UI', Arial, sans-serif" font-size="34" font-weight="900" fill="#e65100" letter-spacing="0.5">TECNOLÓGICA DEL ORIENTE</text>
+    <!-- INSTITUCIÓN DE EDUCACIÓN SUPERIOR -->
+    <text x="2" y="75" font-family="'Plus Jakarta Sans', 'Segoe UI', Arial, sans-serif" font-size="20" font-weight="800" fill="#1e293b" letter-spacing="1.5">INSTITUCIÓN DE EDUCACIÓN SUPERIOR</text>
+  </g>
+</svg>
