@@ -30,6 +30,11 @@ class Settings(BaseSettings):
     SMTP_PASSWORD: str = Field(default="", env="SMTP_PASSWORD")
     SMTP_FROM: str = Field(default="alertas.sat.institucional@gmail.com", env="SMTP_FROM")
 
+    # Moodle Integration Configuration (Tecnológico del Oriente - Curso ID 956)
+    MOODLE_URL: str = Field(default="https://campusvirtual.tecnologicadeloriente.edu.co", env="MOODLE_URL")
+    MOODLE_COURSE_ID: int = Field(default=956, env="MOODLE_COURSE_ID")
+    MOODLE_WS_TOKEN: str = Field(default="", env="MOODLE_WS_TOKEN")
+
     # GitHub Credentials
     GITHUB_TOKEN: str = Field(default="", env="GITHUB_TOKEN")
     GITHUB_REPO_NAME: str = "sat-moodle-multiagen"
