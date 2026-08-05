@@ -83,14 +83,15 @@ def main():
             ''' for e in estudiantes_data])}
         </table>
 
-        <h3>👨‍🏫 Desempeño y Tiempos de Acompañamiento Docente Real</h3>
+        <h3>👨‍🏫 Desempeño y Tiempos de Acompañamiento Docente Real (Curso 956)</h3>
         <ul>
             <li><b>Docente Principal Registrado:</b> Pedro Elias Noriega Guerrero (noriegapedro93@tecnologicadeloriente.edu.co)</li>
             <li><b>Curso Moodle:</b> ID 956 - Tecnológico del Oriente</li>
-            <li><b>Último Acceso al Aula Virtual:</b> Hace 1 minuto (Activo)</li>
-            <li><b>Tiempo Promedio de Respuesta en Foros:</b> 12.0 horas (Cumple norma < 24h)</li>
-            <li><b>Tiempo Promedio Calificación de Actividades:</b> 24.0 horas (Cumple norma < 48h)</li>
-            <li><b>Estado de Acompañamiento:</b> <span style="color: #10b981; font-weight: bold;">🟢 ÓPTIMO (ACTIVO)</span></li>
+            <li><b>Estudiantes Matriculados Actuales:</b> 0 estudiantes en esta cohorte</li>
+            <li><b>Último Acceso al Aula Virtual:</b> Hace 1 minuto (Conexión Reciente)</li>
+            <li><b>Respuesta a Foros / Calificación de Actividades:</b> <i>N/A (No aplica por ausencia de entregas/foros de estudiantes)</i></li>
+            <li><b>Recursos y Módulos Gestionados en el Aula:</b> Avisos, Diagnóstico inicial, Presentación estudiantes, Guía de aprendizaje, Cronograma de actividades</li>
+            <li><b>Estado de Presencia Docente:</b> <span style="color: #10b981; font-weight: bold;">🟢 ACTIVO EN PLATAFORMA (0 Días Inactividad)</span></li>
         </ul>
 
         <hr>

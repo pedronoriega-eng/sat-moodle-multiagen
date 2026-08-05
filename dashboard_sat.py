@@ -282,52 +282,47 @@ with tab2:
     st.subheader("👨‍🏫 Monitoreo de Interacción y Acompañamiento Docente")
     st.caption("Métrica de validación sobre el tiempo de respuesta del profesor en foros, calificación de tareas y frecuencia de conexión al Aula Virtual (Curso 956).")
     
-    # Datos del docente REAL del Curso 956 (Tecnológico del Oriente)
+    # Datos REALES del docente Pedro Elias Noriega Guerrero en el Curso 956
     docente_info = {
         "docente_moodle_id": "DOC-956-PEDRO-NORIEGA",
         "nombre_completo": "Pedro Elias Noriega Guerrero",
         "email": "noriegapedro93@tecnologicadeloriente.edu.co",
         "curso": "Curso ID 956 - Tecnológico del Oriente",
         "inactividad_docente_dias": 0,
-        "ultimo_acceso": "Hace 1 minuto",
-        "tiempo_respuesta_foros_h": 12.0,  # Meta institucional: <24h
-        "tiempo_calificacion_tareas_h": 24.0, # Meta institucional: <48h
-        "total_retroalimentaciones": 15,
-        "frecuencia_clics_semana": 520,
-        "estado_docente": "ÓPTIMO (ACTIVO)"
+        "ultimo_acceso": "Hace 1 minuto (Activo)",
+        "estudiantes_matriculados": 0,
+        "respuesta_foros": "N/A (Sin estudiantes matriculados)",
+        "calificacion_tareas": "N/A (Sin entregas pendientes)",
+        "recursos_revisados": ["Avisos", "Diagnóstico inicial", "Presentación estudiantes", "Guía de aprendizaje", "Cronograma de actividades"],
+        "estado_docente": "🟢 ACTIVO EN PLATAFORMA"
     }
 
     d_col1, d_col2, d_col3, d_col4 = st.columns(4)
-    d_col1.metric("👨‍🏫 Docente Principal Real", docente_info["nombre_completo"])
-    d_col2.metric("⚡ Respuesta en Foros", f"{docente_info['tiempo_respuesta_foros_h']} horas", delta="Meta < 24h (Excelente)")
-    d_col3.metric("📝 Tiempo Calificación", f"{docente_info['tiempo_calificacion_tareas_h']} horas", delta="Meta < 48h (A tiempo)")
-    d_col4.metric("📊 Estado de Acompañamiento", "🟢 ÓPTIMO (ACTIVO)")
+    d_col1.metric("👨‍🏫 Docente Registrado", docente_info["nombre_completo"])
+    d_col2.metric("👥 Estudiantes Matriculados", docente_info["estudiantes_matriculados"])
+    d_col3.metric("⏱️ Último Acceso al Aula", docente_info["ultimo_acceso"])
+    d_col4.metric("📊 Estado en Plataforma", docente_info["estado_docente"])
 
     st.markdown(f"""
     <div class="teacher-card">
-        <h4 style="margin: 0; color: #60a5fa;">📌 Informe de Cumplimiento Docente Real - Curso 956</h4>
-        <p style="color: #cbd5e1; margin-top: 8px;">
-            <b>Docente Registrado:</b> {docente_info['nombre_completo']} (<code>{docente_info['email']}</code>)<br>
-            <b>Último Acceso al Aula Virtual:</b> <i>{docente_info['ultimo_acceso']}</i><br>
-            El profesor registra un nivel de presencia constante en la plataforma. Los foros y novedades son atendidos en un promedio de <b>12.0 horas</b> (cumpliendo la norma institucional de <24h).
+        <h4 style="margin: 0; color: #60a5fa;">📌 Registro de Actividad y Presencia Docente Real (Curso 956)</h4>
+        <p style="color: #cbd5e1; margin-top: 10px;">
+            <b>Docente Principal:</b> {docente_info['nombre_completo']} (<code>{docente_info['email']}</code>)<br>
+            <b>Días de Inactividad:</b> 0 días (Acceso reciente hace 1 minuto)<br>
+            <b>Respuesta a Foros / Calificaciones:</b> <i>{docente_info['respuesta_foros']}</i><br>
+            <b>Recursos y Módulos Gestionados en el Aula:</b> {", ".join(docente_info['recursos_revisados'])}
         </p>
     </div>
     """, unsafe_allow_html=True)
 
-    # Gráfico de tiempos docente vs meta
-    df_doc_graph = pd.DataFrame({
-        "Indicador": ["Respuesta en Foros (h)", "Calificación de Tareas (h)"],
-        "Tiempo Real": [14.2, 36.5],
-        "Límite Máximo Institucional": [24.0, 48.0]
+    # Gráfico de presencia y gestión de recursos del docente
+    df_doc_resources = pd.DataFrame({
+        "Recurso / Módulo del Aula 956": docente_info["recursos_revisados"],
+        "Estado": ["Gestionado / Configurado"] * len(docente_info["recursos_revisados"])
     })
 
-    fig_doc = px.bar(
-        df_doc_graph, x="Indicador", y=["Tiempo Real", "Límite Máximo Institucional"],
-        barmode="group", title="⏱️ Tiempos de Respuesta Docente vs. Límite Institucional (Horas)",
-        color_discrete_sequence=["#38bdf8", "#f43f5e"]
-    )
-    fig_doc.update_layout(template="plotly_dark", height=380)
-    st.plotly_chart(fig_doc, use_container_width=True)
+    st.markdown("#### 📚 Estructura de Recursos Gestionados por el Docente en el Curso 956")
+    st.table(df_doc_resources)
 
 # -----------------------------------------------------------------------------
 # TAB 3: ANALÍTICA MULTIDIMENSIONAL
