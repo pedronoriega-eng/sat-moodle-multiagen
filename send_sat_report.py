@@ -12,10 +12,10 @@ from openpyxl.styles import Font, PatternFill, Alignment
 from config import settings
 
 def main():
-    destinatario = "vice.academica@tecnologicadeloriente.edu.co"
+    destinatarios = ["vice.academica@tecnologicadeloriente.edu.co", "pedro.noriega@gmail.com"]
     asunto = f"🚨 INFORME EJECUTIVO SAT 2026: Diagnóstico de Alertas y Desempeño Docente - Curso 956 ({datetime.now().strftime('%Y-%m-%d')})"
 
-    print(f"[+] Preparando despacho automatizado para: {destinatario}")
+    print(f"[+] Preparando despacho automatizado para: {', '.join(destinatarios)}")
 
     # Datos de la cohorte del Curso 956
     estudiantes_data = [
@@ -101,7 +101,7 @@ def main():
 
     msg = MIMEMultipart()
     msg["From"] = settings.SMTP_FROM
-    msg["To"] = destinatario
+    msg["To"] = ", ".join(destinatarios)
     msg["Subject"] = asunto
     msg.attach(MIMEText(cuerpo_html, "html"))
 
@@ -123,7 +123,7 @@ def main():
                 server.starttls()
                 server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
                 server.send_message(msg)
-            print(f"[+] Correo enviado exitosamente a {destinatario}!")
+            print(f"[+] Correo enviado exitosamente a: {', '.join(destinatarios)}!")
         except Exception as e:
             print(f"[!] No se pudo enviar por SMTP real ({e}). Se generó la copia oficial EML para despacho.")
     else:
