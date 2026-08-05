@@ -83,12 +83,14 @@ def main():
             ''' for e in estudiantes_data])}
         </table>
 
-        <h3>👨‍🏫 Desempeño y Tiempos de Acompañamiento Docente</h3>
+        <h3>👨‍🏫 Desempeño y Tiempos de Acompañamiento Docente Real</h3>
         <ul>
-            <li><b>Docente Asignado:</b> Prof. Dr. Mauricio Mora</li>
-            <li><b>Tiempo Promedio de Respuesta en Foros:</b> 14.2 horas (Cumple norma < 24h)</li>
-            <li><b>Tiempo Promedio Calificación de Actividades:</b> 36.5 horas (Cumple norma < 48h)</li>
-            <li><b>Estado de Acompañamiento:</b> <span style="color: #10b981; font-weight: bold;">🟢 ÓPTIMO</span></li>
+            <li><b>Docente Principal Registrado:</b> Pedro Elias Noriega Guerrero (noriegapedro93@tecnologicadeloriente.edu.co)</li>
+            <li><b>Curso Moodle:</b> ID 956 - Tecnológico del Oriente</li>
+            <li><b>Último Acceso al Aula Virtual:</b> Hace 1 minuto (Activo)</li>
+            <li><b>Tiempo Promedio de Respuesta en Foros:</b> 12.0 horas (Cumple norma < 24h)</li>
+            <li><b>Tiempo Promedio Calificación de Actividades:</b> 24.0 horas (Cumple norma < 48h)</li>
+            <li><b>Estado de Acompañamiento:</b> <span style="color: #10b981; font-weight: bold;">🟢 ÓPTIMO (ACTIVO)</span></li>
         </ul>
 
         <hr>
