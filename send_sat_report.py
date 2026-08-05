@@ -11,14 +11,15 @@ from openpyxl.styles import Font, PatternFill, Alignment
 
 from config import settings
 
-DESTINATARIO_PRUEBAS = ["noriegapedro93@tecnologicadeloriente.edu.co", "pedro.noriega@gmail.com"]
+DESTINATARIOS_VICERRECTORIA = ["vice.academica@tecnologicadeloriente.edu.co", "pedro.noriega@gmail.com"]
+DESTINATARIOS_DOCENTE = ["noriegapedro93@tecnologicadeloriente.edu.co", "pedro.noriega@gmail.com"]
 
 # =============================================================================
-# 1. INFORME 1: TRAZABILIDAD Y MONITOREO DOCENTE (SEPARADO)
+# 1. INFORME 1: TRAZABILIDAD Y MONITOREO DOCENTE (ENVIADO A VICERRECTORÍA)
 # =============================================================================
 def enviar_informe_docente():
     asunto = f"📋 INFORME DE AUDITORÍA, TRAZABILIDAD Y TIEMPOS DOCENTE - CURSO 956 ({datetime.now().strftime('%Y-%m-%d')})"
-    print(f"[+] Generando INFORME 1 (Trazabilidad y Tiempos Docente) para: {', '.join(DESTINATARIO_PRUEBAS)}")
+    print(f"[+] Generando INFORME 1 (Trazabilidad Docente) para Vicerrectoría: {', '.join(DESTINATARIOS_VICERRECTORIA)}")
 
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -48,7 +49,6 @@ def enviar_informe_docente():
     for row in trazabilidad_data:
         ws.append(row)
 
-    # Agregar fila de resumen de tiempo total en el Excel
     ws.append([])
     ws.append(["RESUMEN DE PERMANENCIA EN PLATAFORMA", "", "", "", ""])
     ws.append(["Docente Principal", "Pedro Elias Noriega Guerrero", "", "", ""])
@@ -57,20 +57,20 @@ def enviar_informe_docente():
 
     excel_filename = "Reporte_Trazabilidad_Docente_Curso956.xlsx"
     wb.save(excel_filename)
-    print(f"[+] Archivo Excel generado con tiempos por acción: {excel_filename}")
+    print(f"[+] Archivo Excel generado: {excel_filename}")
 
     cuerpo_html = f"""
     <html>
     <body style="font-family: Arial, sans-serif; color: #1e293b; line-height: 1.6;">
         <div style="background-color: #0f172a; color: #ffffff; padding: 20px; border-radius: 8px;">
             <h2 style="color: #38bdf8; margin: 0;">📋 INFORME DE TRAZABILIDAD Y TIEMPOS DOCENTE</h2>
-            <p style="margin: 5px 0 0 0; color: #cbd5e1;">Coordinación Académica | Tecnológico del Oriente</p>
+            <p style="margin: 5px 0 0 0; color: #cbd5e1;">Vicerrectoría Académica | Tecnológico del Oriente</p>
         </div>
 
         <h3>👨‍🏫 Ficha de Auditoría y Permanencia Docente (Curso ID 956)</h3>
         <ul>
             <li><b>Docente Principal Titular:</b> Pedro Elias Noriega Guerrero</li>
-            <li><b>Correo Institucional:</b> noriegapedro93@tecnologicadeloriente.edu.co</li>
+            <li><b>Correo Institucional Docente:</b> noriegapedro93@tecnologicadeloriente.edu.co</li>
             <li><b>Rol Asignado en Moodle:</b> Profesor Titular</li>
             <li><b>Fecha de Matriculación Oficial:</b> 2026-08-01 08:00:00</li>
             <li><b>Último Acceso Registrado:</b> Hace 1 minuto (Conexión Activa)</li>
@@ -97,25 +97,25 @@ def enviar_informe_docente():
         </table>
 
         <div style="margin-top: 15px; background: #f8fafc; padding: 12px; border-left: 4px solid #38bdf8; border-radius: 4px;">
-            <b>⏱️ Informe Final de Permanencia:</b> El docente registra un tiempo acumulado de permanencia en el aula virtual de <b>143 minutos (2h 23min)</b> distribuidos en 6 sesiones/acciones de configuración didáctica y monitoreo del aula.
+            <b>⏱️ Resumen de Auditoría Docente:</b> El docente registra un tiempo acumulado de permanencia en el aula virtual de <b>143 minutos (2h 23min)</b> distribuidos en 6 sesiones/acciones de configuración didáctica y monitoreo del aula.
         </div>
 
         <hr>
         <p style="font-size: 0.85rem; color: #64748b;">
-            Informe de Auditoría Docente generado automáticamente por el Motor SAT-V 2026.
+            Informe de Auditoría Docente enviado a Vicerrectoría Académica por el Motor SAT-V 2026.
         </p>
     </body>
     </html>
     """
 
-    despachar_correo(asunto, cuerpo_html, excel_filename)
+    despachar_correo(asunto, cuerpo_html, excel_filename, DESTINATARIOS_VICERRECTORIA)
 
 # =============================================================================
-# 2. INFORME 2: ALERTAS Y SEMAFORIZACIÓN ESTUDIANTIL PARA EL DOCENTE DEL CURSO
+# 2. INFORME 2: ALERTAS ESTUDIANTILES (ENVIADO ÚNICAMENTE AL DOCENTE DEL GRUPO)
 # =============================================================================
 def enviar_informe_estudiantes():
     asunto = f"📊 INFORME DE ALERTAS ESTUDIANTILES (SAT-V) - CURSO 956 ({datetime.now().strftime('%Y-%m-%d')})"
-    print(f"[+] Generando INFORME 2 (Alertas Estudiantiles del Curso) para: {', '.join(DESTINATARIO_PRUEBAS)}")
+    print(f"[+] Generando INFORME 2 (Alertas Estudiantiles del Curso) para el Docente del Grupo: {', '.join(DESTINATARIOS_DOCENTE)}")
 
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -133,7 +133,6 @@ def enviar_informe_estudiantes():
         cell.font = header_font
         cell.alignment = Alignment(horizontal="center")
 
-    # Registro estricto del estado actual del curso (0 estudiantes matriculados)
     excel_filename = "Reporte_Alertas_Estudiantiles_Curso956.xlsx"
     wb.save(excel_filename)
     print(f"[+] Archivo Excel generado: {excel_filename}")
@@ -143,7 +142,7 @@ def enviar_informe_estudiantes():
     <body style="font-family: Arial, sans-serif; color: #1e293b; line-height: 1.6;">
         <div style="background-color: #0f172a; color: #ffffff; padding: 20px; border-radius: 8px;">
             <h2 style="color: #38bdf8; margin: 0;">📊 REPORTES Y ALERTAS ESTUDIANTILES SAT-V</h2>
-            <p style="margin: 5px 0 0 0; color: #cbd5e1;">Dirigido al Docente Titular del Curso: Pedro Elias Noriega Guerrero</p>
+            <p style="margin: 5px 0 0 0; color: #cbd5e1;">Dirigido Exclusivamente al Docente del Curso: Pedro Elias Noriega Guerrero</p>
         </div>
 
         <h3>📚 Estado Académico de la Cohorte - Curso ID 956</h3>
@@ -151,26 +150,26 @@ def enviar_informe_estudiantes():
         <p><b>Total Estudiantes Matriculados Actuales:</b> <code>0 estudiantes</code></p>
 
         <div style="background: #f8fafc; border-left: 4px solid #3b82f6; padding: 15px; border-radius: 4px; margin: 15px 0;">
-            ℹ️ <b>Estado del Aula Virtual:</b> El Curso ID 956 se encuentra actualmente en fase de alistamiento sin matriculaciones estudiantiles activas. Tan pronto ingresen estudiantes y registren entregas o accesos a la plataforma Moodle, la matriz de semaforización SAT (🔴 ROJO, 🟡 AMARILLO, 🟢 VERDE) notificará en tiempo real el nivel de riesgo de deserción de cada alumno.
+            ℹ️ <b>Estado del Aula Virtual:</b> El Curso ID 956 se encuentra en fase de alistamiento sin matriculaciones estudiantiles activas. Cuando ingresen estudiantes y registren entregas o accesos, la matriz de semaforización SAT notificará en tiempo real el nivel de riesgo de deserción de tu grupo.
         </div>
 
         <hr>
         <p style="font-size: 0.85rem; color: #64748b;">
-            Informe de Alertas Estudiantiles generado automáticamente por el Motor SAT-V 2026.
+            Informe de Alertas Estudiantiles remitido al Docente Titular del Curso por el Motor SAT-V 2026.
         </p>
     </body>
     </html>
     """
 
-    despachar_correo(asunto, cuerpo_html, excel_filename)
+    despachar_correo(asunto, cuerpo_html, excel_filename, DESTINATARIOS_DOCENTE)
 
 # =============================================================================
-# FUNCION AUXILIAR DE DESPACHO SMTP
+# FUNCION AUXILIAR DE DESPACHO SMTP CON DESTINATARIOS DINÁMICOS
 # =============================================================================
-def despachar_correo(asunto: str, cuerpo_html: str, excel_filename: str):
+def despachar_correo(asunto: str, cuerpo_html: str, excel_filename: str, destinatarios: list):
     msg = MIMEMultipart()
     msg["From"] = settings.SMTP_FROM
-    msg["To"] = ", ".join(DESTINATARIO_PRUEBAS)
+    msg["To"] = ", ".join(destinatarios)
     msg["Subject"] = asunto
     msg.attach(MIMEText(cuerpo_html, "html"))
 
@@ -186,7 +185,7 @@ def despachar_correo(asunto: str, cuerpo_html: str, excel_filename: str):
                 server.starttls()
                 server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
                 server.send_message(msg)
-            print(f"[+] Correo enviado exitosamente a: {', '.join(DESTINATARIO_PRUEBAS)}!")
+            print(f"[+] Correo enviado exitosamente a: {', '.join(destinatarios)}!")
         except Exception as e:
             print(f"[!] Error al enviar correo por SMTP ({e}).")
 
