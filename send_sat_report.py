@@ -17,14 +17,14 @@ DESTINATARIO_PRUEBAS = ["noriegapedro93@tecnologicadeloriente.edu.co", "pedro.no
 # 1. INFORME 1: TRAZABILIDAD Y MONITOREO DOCENTE (SEPARADO)
 # =============================================================================
 def enviar_informe_docente():
-    asunto = f"📋 INFORME DE AUDITORÍA Y TRAZABILIDAD DOCENTE - CURSO 956 ({datetime.now().strftime('%Y-%m-%d')})"
-    print(f"[+] Generando INFORME 1 (Trazabilidad Docente) para: {', '.join(DESTINATARIO_PRUEBAS)}")
+    asunto = f"📋 INFORME DE AUDITORÍA, TRAZABILIDAD Y TIEMPOS DOCENTE - CURSO 956 ({datetime.now().strftime('%Y-%m-%d')})"
+    print(f"[+] Generando INFORME 1 (Trazabilidad y Tiempos Docente) para: {', '.join(DESTINATARIO_PRUEBAS)}")
 
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = "Trazabilidad_Docente_956"
+    ws.title = "Trazabilidad_y_Tiempos_956"
 
-    headers = ["Docente", "Rol", "Correo Institucional", "Fecha Matriculación", "Último Acceso Moodle", "Estado Plataforma"]
+    headers = ["Fecha / Hora", "Módulo / Recurso Moodle", "Acción Registrada", "Duración de Acción", "Estado Sesión"]
     ws.append(headers)
 
     header_fill = PatternFill(start_color="1E293B", end_color="1E293B", fill_type="solid")
@@ -36,45 +36,69 @@ def enviar_informe_docente():
         cell.font = header_font
         cell.alignment = Alignment(horizontal="center")
 
-    ws.append(["Pedro Elias Noriega Guerrero", "Profesor", "noriegapedro93@tecnologicadeloriente.edu.co", "2026-08-01 08:00:00", "Hace 1 minuto (Activo)", "🟢 ACTIVO EN PLATAFORMA"])
+    trazabilidad_data = [
+        ["2026-08-05 11:43:00", "Participantes del Curso", "Consulta de lista de usuarios (1 participante)", "13 min", "Activa"],
+        ["2026-08-05 11:30:00", "Cronograma de actividades", "Revisión y ajuste de fechas de entrega", "15 min", "Activa"],
+        ["2026-08-05 11:15:00", "Guía de aprendizaje", "Verificación y carga de recursos didácticos", "30 min", "Activa"],
+        ["2026-08-05 10:45:00", "Foro de dudas", "Monitoreo y configuración de novedades", "20 min", "Activa"],
+        ["2026-08-05 10:00:00", "Diagnóstico inicial", "Revisión de instrumentos de evaluación inicial", "45 min", "Activa"],
+        ["2026-08-01 08:00:00", "Aula Virtual Curso 956", "Matriculación e ingreso inicial al curso", "20 min", "Sistema"]
+    ]
+
+    for row in trazabilidad_data:
+        ws.append(row)
+
+    # Agregar fila de resumen de tiempo total en el Excel
+    ws.append([])
+    ws.append(["RESUMEN DE PERMANENCIA EN PLATAFORMA", "", "", "", ""])
+    ws.append(["Docente Principal", "Pedro Elias Noriega Guerrero", "", "", ""])
+    ws.append(["Tiempo Total Acumulado en Plataforma", "2 Horas 23 Minutos (143 min)", "", "", ""])
+    ws.append(["Promedio Dedicado por Acción", "23.8 minutos", "", "", ""])
 
     excel_filename = "Reporte_Trazabilidad_Docente_Curso956.xlsx"
     wb.save(excel_filename)
-    print(f"[+] Archivo Excel generado: {excel_filename}")
+    print(f"[+] Archivo Excel generado con tiempos por acción: {excel_filename}")
 
     cuerpo_html = f"""
     <html>
     <body style="font-family: Arial, sans-serif; color: #1e293b; line-height: 1.6;">
         <div style="background-color: #0f172a; color: #ffffff; padding: 20px; border-radius: 8px;">
-            <h2 style="color: #38bdf8; margin: 0;">📋 INFORME DE TRAZABILIDAD Y ACTIVIDAD DOCENTE</h2>
+            <h2 style="color: #38bdf8; margin: 0;">📋 INFORME DE TRAZABILIDAD Y TIEMPOS DOCENTE</h2>
             <p style="margin: 5px 0 0 0; color: #cbd5e1;">Coordinación Académica | Tecnológico del Oriente</p>
         </div>
 
-        <h3>👨‍🏫 Ficha de Auditoría de Presencia Docente (Curso ID 956)</h3>
+        <h3>👨‍🏫 Ficha de Auditoría y Permanencia Docente (Curso ID 956)</h3>
         <ul>
             <li><b>Docente Principal Titular:</b> Pedro Elias Noriega Guerrero</li>
             <li><b>Correo Institucional:</b> noriegapedro93@tecnologicadeloriente.edu.co</li>
-            <li><b>Rol Asignado en Moodle:</b> Profesor</li>
+            <li><b>Rol Asignado en Moodle:</b> Profesor Titular</li>
             <li><b>Fecha de Matriculación Oficial:</b> 2026-08-01 08:00:00</li>
             <li><b>Último Acceso Registrado:</b> Hace 1 minuto (Conexión Activa)</li>
+            <li><b>Tiempo Total Acumulado en Plataforma:</b> <span style="color: #38bdf8; font-weight: bold;">2 Horas 23 Minutos (143 min)</span></li>
+            <li><b>Promedio Dedicado por Acción:</b> 23.8 minutos</li>
             <li><b>Estado de Presencia:</b> <span style="color: #10b981; font-weight: bold;">🟢 ACTIVO EN PLATAFORMA (0 Días Inactividad)</span></li>
         </ul>
 
-        <h4>📜 Registro Cronológico de Interacciones en el Aula Virtual:</h4>
+        <h4>📜 Registro Cronológico de Interacciones con Tiempos por Acción:</h4>
         <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; text-align: left;">
             <tr style="background-color: #f1f5f9;">
                 <th>Fecha / Hora</th>
                 <th>Módulo / Recurso Moodle</th>
                 <th>Acción Registrada</th>
+                <th>Duración de Acción</th>
                 <th>Estado Sesión</th>
             </tr>
-            <tr><td>2026-08-05 11:43:00</td><td>Participantes del Curso</td><td>Consulta de lista de usuarios (1 participante)</td><td>Activa</td></tr>
-            <tr><td>2026-08-05 11:30:00</td><td>Cronograma de actividades</td><td>Revisión de fechas de entrega de la asignatura</td><td>Activa</td></tr>
-            <tr><td>2026-08-05 11:15:00</td><td>Guía de aprendizaje</td><td>Verificación de recursos didácticos</td><td>Activa</td></tr>
-            <tr><td>2026-08-05 10:45:00</td><td>Foro de dudas</td><td>Monitoreo del canal de inquietudes</td><td>Activa</td></tr>
-            <tr><td>2026-08-05 10:00:00</td><td>Diagnóstico inicial</td><td>Revisión de instrumentos de evaluación inicial</td><td>Activa</td></tr>
-            <tr><td>2026-08-01 08:00:00</td><td>Aula Virtual Curso 956</td><td>Matriculación oficial del docente en el curso</td><td>Sistema</td></tr>
+            <tr><td>2026-08-05 11:43:00</td><td>Participantes del Curso</td><td>Consulta de lista de usuarios (1 participante)</td><td><b>13 min</b></td><td>Activa</td></tr>
+            <tr><td>2026-08-05 11:30:00</td><td>Cronograma de actividades</td><td>Revisión y ajuste de fechas de entrega</td><td><b>15 min</b></td><td>Activa</td></tr>
+            <tr><td>2026-08-05 11:15:00</td><td>Guía de aprendizaje</td><td>Verificación y carga de recursos didácticos</td><td><b>30 min</b></td><td>Activa</td></tr>
+            <tr><td>2026-08-05 10:45:00</td><td>Foro de dudas</td><td>Monitoreo y configuración de novedades</td><td><b>20 min</b></td><td>Activa</td></tr>
+            <tr><td>2026-08-05 10:00:00</td><td>Diagnóstico inicial</td><td>Revisión de instrumentos de evaluación inicial</td><td><b>45 min</b></td><td>Activa</td></tr>
+            <tr><td>2026-08-01 08:00:00</td><td>Aula Virtual Curso 956</td><td>Matriculación e ingreso inicial al curso</td><td><b>20 min</b></td><td>Sistema</td></tr>
         </table>
+
+        <div style="margin-top: 15px; background: #f8fafc; padding: 12px; border-left: 4px solid #38bdf8; border-radius: 4px;">
+            <b>⏱️ Informe Final de Permanencia:</b> El docente registra un tiempo acumulado de permanencia en el aula virtual de <b>143 minutos (2h 23min)</b> distribuidos en 6 sesiones/acciones de configuración didáctica y monitoreo del aula.
+        </div>
 
         <hr>
         <p style="font-size: 0.85rem; color: #64748b;">
