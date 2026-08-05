@@ -10,16 +10,16 @@ import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
 
 # -----------------------------------------------------------------------------
-# 1. CONFIGURACIÓN DE LA PÁGINA Y TEMA ESTILO POWER BI EXECUTIVE
+# 1. CONFIGURACIÓN DE LA PÁGINA Y TEMA ESTILO EXECUTIVE POWER BI
 # -----------------------------------------------------------------------------
 st.set_page_config(
-    page_title="SAT-V 2026 | Dashboard de Auditoría y Retención",
+    page_title="SAT-V Dashboard | Tecnológico del Oriente",
     page_icon="🎓",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Estilos CSS Avanzados (Inspirados en la interfaz Executive Power BI de la referencia)
+# Estilos CSS Avanzados - Nivel Ejecutivo Profesional (Sin solapamientos, responsivo)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -30,121 +30,152 @@ st.markdown("""
     
     .main {
         background-color: #f8fafc;
+        padding-top: 1rem;
     }
 
-    /* Top Executive Header Banner */
+    /* Top Executive Header Banner - Perfect Flex Alignment */
     .exec-header {
-        background: linear-gradient(135deg, #1e1e2d 0%, #0f172a 100%);
-        padding: 20px 30px;
-        border-radius: 16px;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        padding: 22px 28px;
+        border-radius: 14px;
         color: white;
-        margin-bottom: 25px;
-        box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25);
+        margin-bottom: 20px;
+        box-shadow: 0 8px 20px -4px rgba(15, 23, 42, 0.2);
         display: flex;
+        flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
+        gap: 15px;
+    }
+
+    .exec-header-left {
+        flex: 1;
+        min-width: 280px;
     }
 
     .exec-title {
-        font-size: 1.6rem;
+        font-size: 1.35rem;
         font-weight: 800;
-        letter-spacing: -0.5px;
+        letter-spacing: -0.3px;
         margin: 0;
         color: #ffffff;
+        line-height: 1.2;
     }
 
     .exec-subtitle {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         color: #94a3b8;
-        margin-top: 4px;
+        margin-top: 5px;
+        font-weight: 500;
     }
 
-    /* Executive KPI Cards (Card UI inspired by image) */
+    .exec-badge-sync {
+        background: rgba(16, 185, 129, 0.15);
+        color: #34d399;
+        border: 1px solid rgba(52, 211, 153, 0.4);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Executive KPI Cards - Ultra Clean Layout */
     .kpi-card {
         background: #ffffff;
-        border-radius: 16px;
-        padding: 20px;
-        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
+        border-radius: 14px;
+        padding: 18px 20px;
+        box-shadow: 0 4px 15px -2px rgba(0, 0, 0, 0.04);
         border: 1px solid #e2e8f0;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    
-    .kpi-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
     }
 
     .kpi-label {
-        font-size: 0.82rem;
+        font-size: 0.78rem;
         font-weight: 700;
         color: #64748b;
         text-transform: uppercase;
         letter-spacing: 0.5px;
+        margin-bottom: 6px;
     }
 
     .kpi-value {
-        font-size: 2.1rem;
+        font-size: 1.8rem;
         font-weight: 800;
         color: #0f172a;
-        margin: 8px 0;
+        margin: 4px 0 10px 0;
+        line-height: 1;
     }
 
-    .kpi-badge-coral {
+    .kpi-footer-badge {
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 4px 10px;
+        border-radius: 12px;
+        display: inline-block;
+        width: fit-content;
+    }
+
+    .badge-coral {
         background: #fff1f2;
         color: #f43f5e;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 0.78rem;
-        font-weight: 700;
     }
 
-    .kpi-badge-teal {
+    .badge-teal {
         background: #ecfeff;
-        color: #06b6d4;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 0.78rem;
-        font-weight: 700;
+        color: #0891b2;
     }
 
-    .kpi-badge-green {
+    .badge-green {
         background: #ecfdf5;
-        color: #10b981;
-        padding: 4px 10px;
-        border-radius: 20px;
-        font-size: 0.78rem;
-        font-weight: 700;
+        color: #059669;
     }
 
     /* Panel Card Containers */
     .panel-box {
         background: #ffffff;
-        border-radius: 16px;
-        padding: 22px;
+        border-radius: 14px;
+        padding: 20px;
         border: 1px solid #e2e8f0;
-        box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
+        box-shadow: 0 4px 15px -2px rgba(0, 0, 0, 0.03);
         margin-bottom: 20px;
     }
 
     .panel-header {
-        font-size: 1.05rem;
+        font-size: 0.98rem;
         font-weight: 700;
         color: #0f172a;
-        margin-bottom: 15px;
+        margin-bottom: 14px;
         border-left: 4px solid #f43f5e;
         padding-left: 10px;
+        line-height: 1.2;
     }
 
-    /* Custom Streamlit Sidebar Override */
-    [data-testid="stSidebar"] {
+    /* Sidebar Padding Fix */
+    [data-testid="stSidebar"] > div:first-child {
+        padding-top: 1.5rem;
         background-color: #ffffff;
         border-right: 1px solid #e2e8f0;
+    }
+
+    .sidebar-header-box {
+        background: #f8fafc;
+        padding: 12px 16px;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 15px;
     }
 </style>
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 2. CARGA DE DATOS DESDE SUPABASE CLOUD (CON CONECTOR ESTRICTO REAL)
+# 2. CARGA DE DATOS DESDE SUPABASE CLOUD
 # -----------------------------------------------------------------------------
 from config import settings
 
@@ -196,45 +227,47 @@ trazabilidad_logs = [
 df_trazabilidad = pd.DataFrame(trazabilidad_logs)
 
 # -----------------------------------------------------------------------------
-# 3. SIDEBAR: CONTROLES E INTERACTIVIDAD DE FILTRADO
+# 3. SIDEBAR: CONTROLES E INTERACTIVIDAD Limpios
 # -----------------------------------------------------------------------------
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/3135/3135715.png", width=60)
-    st.title("🎛️ Panel de Control SAT")
-    st.caption("Filtros Interactivos Executive Dashboard")
+    st.markdown("""
+    <div class="sidebar-header-box">
+        <h3 style="margin: 0; font-size: 1.1rem; color: #0f172a; font-weight: 800;">🎛️ Panel de Control</h3>
+        <p style="margin: 3px 0 0 0; font-size: 0.78rem; color: #64748b;">Configuración y Filtros del Dashboard</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.markdown("---")
-    st.subheader("📚 Selección de Aula")
-    selected_course = st.selectbox("Aula Virtual / Asignatura", ["Curso ID 956 - Tecnológico del Oriente"])
+    st.markdown("#### 📚 Asignatura / Aula Virtual")
+    selected_course = st.selectbox("Seleccione el curso a analizar:", ["Curso ID 956 - Tecnológico del Oriente"], label_visibility="collapsed")
 
-    st.subheader("🎯 Vista Principal")
+    st.markdown("#### 🎯 Vista Principal")
     vista_seleccionada = st.radio(
         "Seleccione Módulo de Análisis:",
-        ["👨‍🏫 Auditoría y Tiempos Docente", "📊 Alertas Estudiantiles (Grupo)", "📈 Analítica Multidimensional", "📥 Exportación de Reportes"]
+        ["👨‍🏫 Auditoría y Tiempos Docente", "📊 Alertas Estudiantiles (Grupo)", "📈 Analítica Multidimensional", "📥 Exportación de Reportes"],
+        label_visibility="collapsed"
     )
 
-    st.markdown("---")
-    st.subheader("⚙️ Filtros de Interacción")
+    st.markdown("#### ⚙️ Filtros de Recurso")
     filtro_modulo = st.multiselect(
-        "Filtrar Recursos Auditados:",
+        "Filtrar Módulos Auditados:",
         options=df_trazabilidad["Módulo / Recurso"].unique(),
         default=df_trazabilidad["Módulo / Recurso"].unique()
     )
 
     st.markdown("---")
-    st.info("💡 **Fidelidad Institucional:** El sistema refleja estrictamente los registros reales de Moodle en tiempo real.")
+    st.markdown("<p style='font-size: 0.75rem; color: #94a3b8; text-align: center;'>SAT-V 2026 • Vicerrectoría Académica<br>Tecnológico del Oriente</p>", unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 4. ENCABEZADO PRINCIPAL (EXECUTIVE BANNER - ESTILO POWER BI)
+# 4. ENCABEZADO PRINCIPAL (EXECUTIVE BANNER - PERFECT ALIGNMENT)
 # -----------------------------------------------------------------------------
 st.markdown(f"""
 <div class="exec-header">
-    <div>
+    <div class="exec-header-left">
         <h1 class="exec-title">🎓 Executive Dashboard | Sistema SAT-V 2026</h1>
         <div class="exec-subtitle">Monitoreo de Permanencia, Trazabilidad Docente y Retención Estudiantil • {selected_course}</div>
     </div>
-    <div style="text-align: right;">
-        <span style="background: rgba(244, 63, 94, 0.2); color: #f43f5e; border: 1px solid #f43f5e; padding: 6px 14px; border-radius: 20px; font-weight: 700; font-size: 0.85rem;">
+    <div>
+        <span class="exec-badge-sync">
             🟢 Moodle Live Sync
         </span>
     </div>
@@ -242,7 +275,7 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 5. FILA SUPERIOR: TARJETAS KPI DE ALTO IMPACTO (STYLE INSPIRED BY POWER BI CARD ROW)
+# 5. FILA SUPERIOR: TARJETAS KPI DE ALTO IMPACTO (SIN SUPERPOSICIONES)
 # -----------------------------------------------------------------------------
 kpi_col1, kpi_col2, kpi_col3, kpi_col4 = st.columns(4)
 
@@ -251,7 +284,7 @@ with kpi_col1:
     <div class="kpi-card">
         <div class="kpi-label">⏱️ Tiempo Total en Plataforma</div>
         <div class="kpi-value">2h 23m</div>
-        <span class="kpi-badge-coral">143 Minutos Acumulados</span>
+        <div class="kpi-footer-badge badge-coral">143 Minutos Acumulados</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -260,7 +293,7 @@ with kpi_col2:
     <div class="kpi-card">
         <div class="kpi-label">⏳ Promedio por Acción</div>
         <div class="kpi-value">23.8 min</div>
-        <span class="kpi-badge-teal">6 Acciones Auditadas</span>
+        <div class="kpi-footer-badge badge-teal">6 Acciones Auditadas</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -269,7 +302,7 @@ with kpi_col3:
     <div class="kpi-card">
         <div class="kpi-label">👨‍🏫 Estado del Docente</div>
         <div class="kpi-value">ACTIVO</div>
-        <span class="kpi-badge-green">Conexión Reciente (Hace 1m)</span>
+        <div class="kpi-footer-badge badge-green">Conexión Reciente (Hace 1m)</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -278,7 +311,7 @@ with kpi_col4:
     <div class="kpi-card">
         <div class="kpi-label">👥 Estudiantes Matriculados</div>
         <div class="kpi-value">0</div>
-        <span class="kpi-badge-coral">Fase de Alistamiento</span>
+        <div class="kpi-footer-badge badge-coral">Fase de Alistamiento</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -311,11 +344,11 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
                 "Sesión": st.column_config.TextColumn("🟢 Estado Sesión")
             },
             use_container_width=True,
-            height=320
+            height=260
         )
         st.markdown("</div>", unsafe_allow_html=True)
 
-        # Gráfico de barras de tiempo por acción (Estilo Power BI)
+        # Gráfico de barras de tiempo por acción
         st.markdown("""
         <div class="panel-box">
             <div class="panel-header">📊 Duración Dedicada por Cada Acción (Minutos)</div>
@@ -334,7 +367,7 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             font=dict(family="Plus Jakarta Sans, sans-serif", color="#0f172a"),
-            height=280,
+            height=250,
             margin=dict(l=0, r=20, t=10, b=10)
         )
         st.plotly_chart(fig_bar, use_container_width=True)
@@ -344,13 +377,13 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
         st.markdown(f"""
         <div class="panel-box">
             <div class="panel-header">👤 Ficha de Auditoría Docente Real</div>
-            <div style="background: #f1f5f9; padding: 15px; border-radius: 12px; border-left: 4px solid #f43f5e;">
-                <p style="margin: 0; font-weight: 700; color: #0f172a; font-size: 1.05rem;">{docente_real['nombre']}</p>
+            <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; border-left: 4px solid #f43f5e;">
+                <p style="margin: 0; font-weight: 700; color: #0f172a; font-size: 1.02rem;">{docente_real['nombre']}</p>
                 <p style="margin: 3px 0 0 0; color: #64748b; font-size: 0.85rem;">✉️ {docente_real['email']}</p>
-                <p style="margin: 8px 0 0 0; color: #334155; font-size: 0.88rem;">
+                <p style="margin: 10px 0 0 0; color: #334155; font-size: 0.88rem; line-height: 1.6;">
                     <b>Rol:</b> {docente_real['rol']}<br>
                     <b>Fecha Matriculación:</b> {docente_real['fecha_matriculacion']}<br>
-                    <b>Último Acceso:</b> {docente_real['ultimo_acceso']}
+                    <b>Último Acceso Moodle:</b> {docente_real['ultimo_acceso']}
                 </p>
             </div>
         </div>
@@ -373,7 +406,7 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
             font=dict(family="Plus Jakarta Sans, sans-serif", color="#0f172a"),
-            height=280,
+            height=250,
             margin=dict(l=0, r=0, t=10, b=10)
         )
         st.plotly_chart(fig_donut, use_container_width=True)
