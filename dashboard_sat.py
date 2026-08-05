@@ -227,26 +227,25 @@ trazabilidad_logs = [
 df_trazabilidad = pd.DataFrame(trazabilidad_logs)
 
 # -----------------------------------------------------------------------------
-# 3. SIDEBAR: CONTROLES E INTERACTIVIDAD Limpios CON LOGO INSTITUCIONAL
+# 3. SIDEBAR: CONTROLES E INTERACTIVIDAD CON LOGO OFICIAL
 # -----------------------------------------------------------------------------
+import base64
+
+def get_logo_b64():
+    try:
+        with open("logo_oficial.png", "rb") as f:
+            return f"data:image/png;base64,{base64.b64encode(f.read()).decode()}"
+    except Exception:
+        return "https://tecnologicadeloriente.edu.co/wp-content/uploads/2024/09/LOGO-ILLUSTRATOR-01.png"
+
+LOGO_B64 = get_logo_b64()
+
 with st.sidebar:
-    # Logo Institucional Tecnológica del Oriente
+    # Logo Oficial Institucional Tecnológica del Oriente
+    st.image("logo_oficial.png", use_container_width=True)
+
     st.markdown("""
-    <div style="text-align: center; padding: 10px 0 15px 0;">
-        <svg viewBox="0 0 500 120" width="210" height="50">
-            <g transform="translate(10, 10)">
-                <path d="M 15 50 C 15 85, 35 100, 50 100 C 65 100, 85 85, 85 50 L 85 30 L 68 30 L 68 50 C 68 70, 60 82, 50 82 C 40 82, 32 70, 32 50 L 32 30 L 15 30 Z" fill="#e65100" />
-                <path d="M 38 48 C 38 65, 43 72, 50 72 C 57 72, 62 65, 62 48 L 62 30 L 38 30 Z" fill="#ffffff" />
-                <circle cx="50" cy="35" r="28" fill="none" stroke="#111111" stroke-width="7" />
-                <circle cx="50" cy="35" r="13" fill="#10b981" />
-            </g>
-            <g transform="translate(115, 20)">
-                <text x="0" y="42" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="34" font-weight="900" fill="#e65100">TECNOLÓGICA DEL ORIENTE</text>
-                <text x="2" y="75" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="20" font-weight="800" fill="#1e293b">INSTITUCIÓN DE EDUCACIÓN SUPERIOR</text>
-            </g>
-        </svg>
-    </div>
-    <div class="sidebar-header-box">
+    <div class="sidebar-header-box" style="margin-top: 10px;">
         <h3 style="margin: 0; font-size: 1.05rem; color: #0f172a; font-weight: 800;">🎛️ Panel de Control SAT</h3>
         <p style="margin: 3px 0 0 0; font-size: 0.78rem; color: #64748b;">Tecnológica del Oriente</p>
     </div>
@@ -273,24 +272,13 @@ with st.sidebar:
     st.markdown("<p style='font-size: 0.75rem; color: #94a3b8; text-align: center;'>SAT-V 2026 • Vicerrectoría Académica<br><b>Tecnológica del Oriente</b></p>", unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 4. ENCABEZADO PRINCIPAL (EXECUTIVE BANNER CON LOGO OFICIAL)
+# 4. ENCABEZADO PRINCIPAL (EXECUTIVE BANNER CON LOGO OFICIAL DESPLEGADO)
 # -----------------------------------------------------------------------------
 st.markdown(f"""
 <div class="exec-header">
-    <div style="display: flex; align-items: center; gap: 20px;">
-        <div style="background: white; padding: 8px 14px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
-            <svg viewBox="0 0 500 120" width="180" height="42">
-                <g transform="translate(10, 10)">
-                    <path d="M 15 50 C 15 85, 35 100, 50 100 C 65 100, 85 85, 85 50 L 85 30 L 68 30 L 68 50 C 68 70, 60 82, 50 82 C 40 82, 32 70, 32 50 L 32 30 L 15 30 Z" fill="#e65100" />
-                    <path d="M 38 48 C 38 65, 43 72, 50 72 C 57 72, 62 65, 62 48 L 62 30 L 38 30 Z" fill="#ffffff" />
-                    <circle cx="50" cy="35" r="28" fill="none" stroke="#111111" stroke-width="7" />
-                    <circle cx="50" cy="35" r="13" fill="#10b981" />
-                </g>
-                <g transform="translate(115, 20)">
-                    <text x="0" y="42" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="34" font-weight="900" fill="#e65100">TECNOLÓGICA DEL ORIENTE</text>
-                    <text x="2" y="75" font-family="'Plus Jakarta Sans', Arial, sans-serif" font-size="20" font-weight="800" fill="#1e293b">INSTITUCIÓN DE EDUCACIÓN SUPERIOR</text>
-                </g>
-            </svg>
+    <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
+        <div style="background: white; padding: 10px 18px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: flex; align-items: center;">
+            <img src="{LOGO_B64}" style="max-height: 52px; width: auto; object-fit: contain;" alt="Tecnológica del Oriente Logo Oficial" />
         </div>
         <div>
             <h1 class="exec-title">Executive Dashboard | Sistema SAT-V 2026</h1>
