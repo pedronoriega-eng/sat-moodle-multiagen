@@ -127,4 +127,63 @@ class DatabaseManager:
             logger.warning(f"⚠️ Error al consultar historial de {moodle_id} en Supabase ({e}). Usando fallback en memoria.")
             return [a for a in self._memory_alertas if a.get("estudiante_moodle_id") == moodle_id]
 
+    async def registrar_docente(self, docente_data: Dict[str, Any]) -> Dict[str, Any]:
+        if self.use_mock:
+            return docente_data
+        try:
+            req_url = f"{self.rest_url}/docentes"
+            data_bytes = json.dumps([docente_data]).encode('utf-8')
+            headers = self._headers()
+            headers["Prefer"] = "resolution=merge-duplicates,return=representation"
+            req = urllib.request.Request(req_url, data=data_bytes, headers=headers, method="POST")
+            with urllib.request.urlopen(req) as resp:
+                res = json.loads(resp.read().decode('utf-8'))
+                logger.info(f"✅ Docente registrado en Supabase: {docente_data.get('docente_moodle_id')}")
+                return res[0] if res else docente_data
+        except Exception as e:
+            logger.warning(f"⚠️ Error al registrar docente ({e}).")
+            return docente_data
+
+    async def registrar_interaccion_docente(self, interaccion_docente: Dict[str, Any]) -> Dict[str, Any]:
+        if self.use_mock:
+            return interaccion_docente
+        try:
+            req_url = f"{self.rest_url}/docente_interacciones"
+            data_bytes = json.dumps([interaccion_docente]).encode('utf-8')
+            headers = self._headers()
+            headers["Prefer"] = "return=representation"
+            req = urllib.request.Request(req_url, data=data_bytes, headers=headers, method="POST")
+            with urllib.request.urlopen(req) as resp:
+                res = json.loads(resp.read().decode('utf-8'))
+                logger.info(f"✅ Interacción docente registrada en Supabase: {interaccion_docente.get('docente_moodle_id')}")
+                return res[0] if res else interaccion_docente
+        except Exception as e:
+            logger.warning(f"⚠️ Error al registrar interacción docente ({e}).")
+            return interaccion_docente
+
+    async def obtener_metricas_docentes(self, curso_id: int = 956) -> List[Dict[str, Any]]:
+        if self.use_mock:
+            return [
+                {
+                    "docente_moodle_id": "DOC-956-01",
+                    "nombre_completo": "Prof. Dr. Ricardo Morales",
+                    "email": "ricardo.morales@tecnologicadeloriente.edu.co",
+                    "curso_moodle_id": 956,
+                    "dias_inactividad_docente": 1,
+                    "horas_respuesta_foros": 14.5,
+                    "horas_calificacion_tareas": 26.0,
+                    "total_interacciones": 340,
+                    "estado_interaccion": "OPTIMO"
+                }
+            ]
+        try:
+            req_url = f"{self.rest_url}/docente_interacciones?curso_moodle_id=eq.{curso_id}&order=fecha_evaluacion.desc"
+            req = urllib.request.Request(req_url, headers=self._headers(), method="GET")
+            with urllib.request.urlopen(req) as resp:
+                res = json.loads(resp.read().decode('utf-8'))
+                return res if res else []
+        except Exception as e:
+            logger.warning(f"⚠️ Error al consultar métricas docentes ({e}). Usando datos por defecto.")
+            return []
+
 db_manager = DatabaseManager()
