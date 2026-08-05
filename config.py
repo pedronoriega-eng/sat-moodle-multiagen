@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     GEMINI_PRO_MODEL: str = "gemini-1.5-pro"
 
     # Supabase Free Tier Credentials
-    SUPABASE_URL: str = Field(default="", env="SUPABASE_URL")
+    SUPABASE_URL: str = Field(default="https://qkpvumvvcxoqdfuzaome.supabase.co", env="SUPABASE_URL")
     SUPABASE_KEY: str = Field(default="", env="SUPABASE_KEY")
 
     # SMTP Configuration para notificaciones por correo
@@ -32,7 +32,7 @@ class Settings(BaseSettings):
 
     # GitHub Credentials
     GITHUB_TOKEN: str = Field(default="", env="GITHUB_TOKEN")
-    GITHUB_REPO_NAME: str = "sat-moodle-multiagent"
+    GITHUB_REPO_NAME: str = "sat-moodle-multiagen"
 
     class Config:
         env_file = ".env"
