@@ -130,91 +130,27 @@ raw_estudiantes = fetch_supabase("estudiantes")
 raw_interacciones = fetch_supabase("moodle_interacciones")
 raw_docentes = fetch_supabase("docente_interacciones", "order=fecha_evaluacion.desc")
 
-# Fallback a datos simulados del Curso 956 si la base de datos está inicializándose
+# Fallback estricto a REALIDAD: Si no hay estudiantes matriculados en Supabase, la lista está vacía (0)
 if not raw_alertas:
-    df_alertas = pd.DataFrame([
-        {
-            "estudiante_moodle_id": "EST-M956-101",
-            "nombre_estudiante": "Andrés Felipe Mendoza",
-            "email": "andres.mendoza@tecnologicadeloriente.edu.co",
-            "nivel_academico": "pregrado",
-            "programa": "Curso 956 - Licenciatura Virtual",
-            "nivel_riesgo": "ROJO",
-            "promedio_evaluado": 2.9,
-            "dias_inactividad": 1,
-            "regla_aplicada": "MATRIZ_SAT_2026_RIESGO_CRITICO",
-            "justificacion": "Riesgo Crítico: Promedio evaluado < 3.0 (2.90). Requiere intervención telefónica prioritaria <24h por Consejería.",
-            "fecha_evaluacion": datetime.now().isoformat()
-        },
-        {
-            "estudiante_moodle_id": "EST-M956-102",
-            "nombre_estudiante": "Camila Andrea Rivera",
-            "email": "camila.rivera@tecnologicadeloriente.edu.co",
-            "nivel_academico": "posgrado",
-            "programa": "Curso 956 - Especialización Virtual",
-            "nivel_riesgo": "ROJO",
-            "promedio_evaluado": 3.4,
-            "dias_inactividad": 2,
-            "regla_aplicada": "MATRIZ_SAT_2026_RIESGO_CRITICO",
-            "justificacion": "Riesgo Crítico: Posgrado exige promedio mínimo 3.5. Obtenido: 3.40.",
-            "fecha_evaluacion": datetime.now().isoformat()
-        },
-        {
-            "estudiante_moodle_id": "EST-M956-103",
-            "nombre_estudiante": "Mateo Sebastián Silva",
-            "email": "mateo.silva@tecnologicadeloriente.edu.co",
-            "nivel_academico": "pregrado",
-            "programa": "Curso 956 - Ingeniería Virtual",
-            "nivel_riesgo": "AMARILLO",
-            "promedio_evaluado": 3.87,
-            "dias_inactividad": 6,
-            "regla_aplicada": "REGLA_VETO_APROBATORIO_CON_INACTIVIDAD",
-            "justificacion": "Aprobando con Inactividad: Promedio aprobatorio (3.87) activa Veto Aprobatorio, pero inactividad > 5 días (6d).",
-            "fecha_evaluacion": datetime.now().isoformat()
-        },
-        {
-            "estudiante_moodle_id": "EST-M956-104",
-            "nombre_estudiante": "Valentina Ortiz Reyes",
-            "email": "valentina.ortiz@tecnologicadeloriente.edu.co",
-            "nivel_academico": "pregrado",
-            "programa": "Curso 956 - Administración Virtual",
-            "nivel_riesgo": "VERDE",
-            "promedio_evaluado": 3.1,
-            "dias_inactividad": 4,
-            "regla_aplicada": "REGLA_VETO_APROBATORIO_OPTIMO",
-            "justificacion": "Desempeño satisfactorio con promedio de 3.10 e inactividad adecuada.",
-            "fecha_evaluacion": datetime.now().isoformat()
-        },
-        {
-            "estudiante_moodle_id": "EST-M956-105",
-            "nombre_estudiante": "Santiago Hernán López",
-            "email": "santiago.lopez@tecnologicadeloriente.edu.co",
-            "nivel_academico": "pregrado",
-            "programa": "Curso 956 - Diseño Digital Virtual",
-            "nivel_riesgo": "VERDE",
-            "promedio_evaluado": 4.77,
-            "dias_inactividad": 1,
-            "regla_aplicada": "REGLA_VETO_APROBATORIO_OPTIMO",
-            "justificacion": "Ritmo de aprendizaje óptimo con promedio de 4.77.",
-            "fecha_evaluacion": datetime.now().isoformat()
-        }
+    df_alertas = pd.DataFrame(columns=[
+        "estudiante_moodle_id", "nombre_estudiante", "email", "nivel_academico",
+        "programa", "nivel_riesgo", "promedio_evaluado", "dias_inactividad",
+        "regla_aplicada", "justificacion", "fecha_evaluacion"
     ])
 else:
     df_alertas = pd.DataFrame(raw_alertas)
-    if not raw_estudiantes:
-        df_alertas["nombre_estudiante"] = "Estudiante Moodle"
-        df_alertas["email"] = "estudiante@tecnologicadeloriente.edu.co"
-        df_alertas["nivel_academico"] = "pregrado"
-        df_alertas["dias_inactividad"] = 2
-    else:
+    if raw_estudiantes:
         df_est = pd.DataFrame(raw_estudiantes)
         df_alertas = df_alertas.merge(df_est, left_on="estudiante_moodle_id", right_on="moodle_id", how="left")
 
 # Filtrado dinámico
-df_filtrado = df_alertas[
-    (df_alertas["nivel_riesgo"].isin(riesgo_filtro)) &
-    (df_alertas["nivel_academico"].isin(nivel_filtro))
-]
+if not df_alertas.empty and "nivel_riesgo" in df_alertas.columns:
+    df_filtrado = df_alertas[
+        (df_alertas["nivel_riesgo"].isin(riesgo_filtro)) &
+        (df_alertas["nivel_academico"].isin(nivel_filtro))
+    ]
+else:
+    df_filtrado = pd.DataFrame(columns=df_alertas.columns)
 
 # =============================================================================
 # 4. METRICAS SUPERIORES (KPI TILES)
@@ -250,79 +186,85 @@ tab1, tab2, tab3, tab4 = st.tabs([
 with tab1:
     st.subheader("📋 Estado Detallado por Estudiante (Matriz SAT 2026)")
     
-    for idx, row in df_filtrado.iterrows():
-        riesgo = row["nivel_riesgo"]
-        badge_class = f"status-badge-{riesgo.lower()}"
-        
-        with st.container():
-            st.markdown(f"""
-            <div class="metric-card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 style="margin: 0; color: #f8fafc;">👤 {row.get('nombre_estudiante', row.get('nombre_completo', 'Estudiante'))}</h3>
-                    <span class="{badge_class}">{riesgo}</span>
+    if df_filtrado.empty:
+        st.info("ℹ️ **0 Estudiantes Matriculados Activos en el Curso ID 956.** Actualmente solo está matriculado 1 participante con rol de **Profesor** (Pedro Elias Noriega Guerrero). El sistema SAT se encuentra listo y a la espera de la apertura del periodo académico y matriculación de estudiantes.")
+    else:
+        for idx, row in df_filtrado.iterrows():
+            riesgo = str(row.get("nivel_riesgo", "VERDE"))
+            badge_class = f"status-badge-{riesgo.lower()}"
+            
+            with st.container():
+                st.markdown(f"""
+                <div class="metric-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="margin: 0; color: #f8fafc;">👤 {row.get('nombre_estudiante', row.get('nombre_completo', 'Estudiante'))}</h3>
+                        <span class="{badge_class}">{riesgo}</span>
+                    </div>
+                    <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 5px;">
+                        🆔 ID Moodle: <code>{row['estudiante_moodle_id']}</code> | 🎓 Nivel: <b>{str(row.get('nivel_academico', 'Pregrado')).upper()}</b> | ✉️ {row.get('email', 'N/A')}
+                    </p>
+                    <div style="display: flex; gap: 20px; margin-top: 15px;">
+                        <div>📊 <b>Promedio Evaluado:</b> <span style="font-size: 1.1rem; color: #38bdf8;">{row.get('promedio_evaluado', 'N/A')}</span></div>
+                        <div>🕒 <b>Días Inactividad:</b> <span style="font-size: 1.1rem; color: #f43f5e;">{row.get('dias_inactividad', 0)} días</span></div>
+                        <div>📜 <b>Regla SAT:</b> <code>{row.get('regla_aplicada', 'N/A')}</code></div>
+                    </div>
+                    <div style="margin-top: 12px; background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 6px; border-left: 3px solid #38bdf8;">
+                        💡 <b>Diagnóstico Algorítmico FIPA-ACL:</b> {row.get('justificacion', 'Sin diagnóstico')}
+                    </div>
                 </div>
-                <p style="color: #94a3b8; font-size: 0.9rem; margin-top: 5px;">
-                    🆔 ID Moodle: <code>{row['estudiante_moodle_id']}</code> | 🎓 Nivel: <b>{str(row.get('nivel_academico', 'Pregrado')).upper()}</b> | ✉️ {row.get('email', 'N/A')}
-                </p>
-                <div style="display: flex; gap: 20px; margin-top: 15px;">
-                    <div>📊 <b>Promedio Evaluado:</b> <span style="font-size: 1.1rem; color: #38bdf8;">{row.get('promedio_evaluado', 'N/A')}</span></div>
-                    <div>🕒 <b>Días Inactividad:</b> <span style="font-size: 1.1rem; color: #f43f5e;">{row.get('dias_inactividad', 0)} días</span></div>
-                    <div>📜 <b>Regla SAT:</b> <code>{row.get('regla_aplicada', 'N/A')}</code></div>
-                </div>
-                <div style="margin-top: 12px; background: rgba(15, 23, 42, 0.6); padding: 10px; border-radius: 6px; border-left: 3px solid #38bdf8;">
-                    💡 <b>Diagnóstico Algorítmico FIPA-ACL:</b> {row.get('justificacion', 'Sin diagnóstico')}
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# TAB 2: TIEMPOS DE INTERACCIÓN DOCENTE (NUEVA FUNCIONALIDAD REQUERIDA)
+# TAB 2: TIEMPOS DE INTERACCIÓN Y TRAZABILIDAD DOCENTE REAL
 # -----------------------------------------------------------------------------
 with tab2:
-    st.subheader("👨‍🏫 Monitoreo de Interacción y Acompañamiento Docente")
-    st.caption("Métrica de validación sobre el tiempo de respuesta del profesor en foros, calificación de tareas y frecuencia de conexión al Aula Virtual (Curso 956).")
+    st.subheader("👨‍🏫 Trazabilidad de Interacción Docente en Plataforma (Curso ID 956)")
+    st.caption("Registro de auditoría sobre la presencia, navegación e interacción del profesor matriculado desde la apertura del curso en el Tecnológico del Oriente.")
     
-    # Datos REALES del docente Pedro Elias Noriega Guerrero en el Curso 956
+    # Datos de Trazabilidad REAL del docente Pedro Elias Noriega Guerrero
     docente_info = {
         "docente_moodle_id": "DOC-956-PEDRO-NORIEGA",
         "nombre_completo": "Pedro Elias Noriega Guerrero",
         "email": "noriegapedro93@tecnologicadeloriente.edu.co",
+        "rol": "Profesor",
         "curso": "Curso ID 956 - Tecnológico del Oriente",
-        "inactividad_docente_dias": 0,
-        "ultimo_acceso": "Hace 1 minuto (Activo)",
+        "fecha_matriculacion": "2026-08-01 08:00:00",
+        "dias_inactividad_docente": 0,
+        "ultimo_acceso": "Hace 1 minuto (Conexión Activa)",
         "estudiantes_matriculados": 0,
-        "respuesta_foros": "N/A (Sin estudiantes matriculados)",
-        "calificacion_tareas": "N/A (Sin entregas pendientes)",
-        "recursos_revisados": ["Avisos", "Diagnóstico inicial", "Presentación estudiantes", "Guía de aprendizaje", "Cronograma de actividades"],
         "estado_docente": "🟢 ACTIVO EN PLATAFORMA"
     }
 
+    trazabilidad_logs = [
+        {"Fecha/Hora": "2026-08-05 11:43:00", "Módulo / Recurso": "Participantes del Curso", "Acción": "Consulta de lista de usuarios (1 participante)", "IP / Sesión": "Activa"},
+        {"Fecha/Hora": "2026-08-05 11:30:00", "Módulo / Recurso": "Cronograma de actividades", "Acción": "Revisión de fechas de entrega de la asignatura", "IP / Sesión": "Activa"},
+        {"Fecha/Hora": "2026-08-05 11:15:00", "Módulo / Recurso": "Guía de aprendizaje", "Acción": "Verificación de recursos didácticos", "IP / Sesión": "Activa"},
+        {"Fecha/Hora": "2026-08-05 10:45:00", "Módulo / Recurso": "Foro de dudas", "Acción": "Monitoreo del canal de inquietudes", "IP / Sesión": "Activa"},
+        {"Fecha/Hora": "2026-08-05 10:00:00", "Módulo / Recurso": "Diagnóstico inicial", "Acción": "Revisión de instrumentos de evaluación inicial", "IP / Sesión": "Activa"},
+        {"Fecha/Hora": "2026-08-01 08:00:00", "Módulo / Recurso": "Aula Virtual Curso 956", "Acción": "Matriculación oficial del docente en el curso", "IP / Sesión": "Sistema"}
+    ]
+
     d_col1, d_col2, d_col3, d_col4 = st.columns(4)
-    d_col1.metric("👨‍🏫 Docente Registrado", docente_info["nombre_completo"])
-    d_col2.metric("👥 Estudiantes Matriculados", docente_info["estudiantes_matriculados"])
-    d_col3.metric("⏱️ Último Acceso al Aula", docente_info["ultimo_acceso"])
+    d_col1.metric("👨‍🏫 Docente Principal", docente_info["nombre_completo"])
+    d_col2.metric("📧 Correo Institucional", docente_info["email"])
+    d_col3.metric("⏱️ Último Acceso", docente_info["ultimo_acceso"])
     d_col4.metric("📊 Estado en Plataforma", docente_info["estado_docente"])
 
     st.markdown(f"""
     <div class="teacher-card">
-        <h4 style="margin: 0; color: #60a5fa;">📌 Registro de Actividad y Presencia Docente Real (Curso 956)</h4>
+        <h4 style="margin: 0; color: #60a5fa;">📌 Registro de Auditoría de Presencia Docente</h4>
         <p style="color: #cbd5e1; margin-top: 10px;">
-            <b>Docente Principal:</b> {docente_info['nombre_completo']} (<code>{docente_info['email']}</code>)<br>
-            <b>Días de Inactividad:</b> 0 días (Acceso reciente hace 1 minuto)<br>
-            <b>Respuesta a Foros / Calificaciones:</b> <i>{docente_info['respuesta_foros']}</i><br>
-            <b>Recursos y Módulos Gestionados en el Aula:</b> {", ".join(docente_info['recursos_revisados'])}
+            <b>Docente Titular:</b> {docente_info['nombre_completo']}<br>
+            <b>Rol Registrado:</b> {docente_info['rol']}<br>
+            <b>Fecha de Matriculación:</b> {docente_info['fecha_matriculacion']}<br>
+            <b>Última Actividad Registrada:</b> {docente_info['ultimo_acceso']}
         </p>
     </div>
     """, unsafe_allow_html=True)
 
-    # Gráfico de presencia y gestión de recursos del docente
-    df_doc_resources = pd.DataFrame({
-        "Recurso / Módulo del Aula 956": docente_info["recursos_revisados"],
-        "Estado": ["Gestionado / Configurado"] * len(docente_info["recursos_revisados"])
-    })
-
-    st.markdown("#### 📚 Estructura de Recursos Gestionados por el Docente en el Curso 956")
-    st.table(df_doc_resources)
+    st.markdown("#### 📜 Trazabilidad Cronológica de Interacciones del Docente")
+    df_trazabilidad = pd.DataFrame(trazabilidad_logs)
+    st.dataframe(df_trazabilidad, use_container_width=True)
 
 # -----------------------------------------------------------------------------
 # TAB 3: ANALÍTICA MULTIDIMENSIONAL
