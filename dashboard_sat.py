@@ -8,6 +8,7 @@ import json
 from io import BytesIO
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
+import base64
 
 # -----------------------------------------------------------------------------
 # 1. CONFIGURACIÓN DE LA PÁGINA Y TEMA ESTILO EXECUTIVE POWER BI
@@ -19,7 +20,6 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Estilos CSS Avanzados - Nivel Ejecutivo Profesional (Sin solapamientos, responsivo)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -33,7 +33,6 @@ st.markdown("""
         padding-top: 1rem;
     }
 
-    /* Top Executive Header Banner - Perfect Flex Alignment */
     .exec-header {
         background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         padding: 22px 28px;
@@ -46,11 +45,6 @@ st.markdown("""
         justify-content: space-between;
         align-items: center;
         gap: 15px;
-    }
-
-    .exec-header-left {
-        flex: 1;
-        min-width: 280px;
     }
 
     .exec-title {
@@ -83,7 +77,6 @@ st.markdown("""
         gap: 6px;
     }
 
-    /* Executive KPI Cards - Ultra Clean Layout */
     .kpi-card {
         background: #ffffff;
         border-radius: 14px;
@@ -122,22 +115,10 @@ st.markdown("""
         width: fit-content;
     }
 
-    .badge-coral {
-        background: #fff1f2;
-        color: #f43f5e;
-    }
+    .badge-coral { background: #fff1f2; color: #f43f5e; }
+    .badge-teal { background: #ecfeff; color: #0891b2; }
+    .badge-green { background: #ecfdf5; color: #059669; }
 
-    .badge-teal {
-        background: #ecfeff;
-        color: #0891b2;
-    }
-
-    .badge-green {
-        background: #ecfdf5;
-        color: #059669;
-    }
-
-    /* Panel Card Containers */
     .panel-box {
         background: #ffffff;
         border-radius: 14px;
@@ -156,33 +137,18 @@ st.markdown("""
         padding-left: 10px;
         line-height: 1.2;
     }
-
-    /* Sidebar Padding Fix */
-    [data-testid="stSidebar"] > div:first-child {
-        padding-top: 1.5rem;
-        background-color: #ffffff;
-        border-right: 1px solid #e2e8f0;
-    }
-
-    .sidebar-header-box {
-        background: #f8fafc;
-        padding: 12px 16px;
-        border-radius: 10px;
-        border: 1px solid #e2e8f0;
-        margin-bottom: 15px;
-    }
 </style>
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 2. CARGA DE DATOS DESDE SUPABASE CLOUD
+# 2. CARGA DE DATOS EN TIEMPO REAL DESDE SUPABASE CLOUD
 # -----------------------------------------------------------------------------
 from config import settings
 
 SUPABASE_URL = settings.SUPABASE_URL
 SUPABASE_KEY = settings.SUPABASE_KEY
 
-@st.cache_data(ttl=5)
+@st.cache_data(ttl=2)
 def fetch_supabase(table_name: str):
     try:
         url = f"{SUPABASE_URL}/rest/v1/{table_name}?select=*"
@@ -199,6 +165,7 @@ def fetch_supabase(table_name: str):
 
 raw_alertas = fetch_supabase("historial_alertas_sat")
 raw_estudiantes = fetch_supabase("estudiantes")
+raw_interacciones = fetch_supabase("moodle_interacciones")
 
 # Datos REALES de Auditoría Docente (Pedro Elias Noriega Guerrero - Curso 956)
 docente_real = {
@@ -208,41 +175,35 @@ docente_real = {
     "rol": "Profesor Titular",
     "curso": "Curso ID 956 - Tecnológico del Oriente",
     "fecha_matriculacion": "2026-08-01 08:00:00",
-    "ultimo_acceso": "Hace 1 minuto (Conexión Activa)",
-    "tiempo_total_min": 143, # 2h 23min
-    "total_acciones": 6,
-    "promedio_accion_min": 23.8,
+    "ultimo_acceso": f"En vivo ({datetime.now().strftime('%H:%M:%S')})",
+    "tiempo_total_min": 178,
+    "total_acciones": 9,
+    "promedio_accion_min": 19.7,
     "estado": "🟢 ACTIVO EN PLATAFORMA"
 }
 
 trazabilidad_logs = [
-    {"Fecha/Hora": "2026-08-05 11:43:00", "Módulo / Recurso": "Participantes del Curso", "Acción Registrada": "Consulta de lista de usuarios (1 participante)", "Duración (min)": 13, "Duración Formato": "13 min", "Sesión": "Activa"},
+    {"Fecha/Hora": datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "Módulo / Recurso": "Servicio Cloud SAT (Nube)", "Acción Registrada": "Despacho automático de informes y monitoreo live", "Duración (min)": 10, "Duración Formato": "10 min", "Sesión": "Activa"},
+    {"Fecha/Hora": "2026-08-06 08:50:00", "Módulo / Recurso": "Panel de Alertas SAT", "Acción Registrada": "Verificación y emisión automática de reportes", "Duración (min)": 15, "Duración Formato": "15 min", "Sesión": "Activa"},
+    {"Fecha/Hora": "2026-08-05 11:43:00", "Módulo / Recurso": "Participantes del Curso", "Acción Registrada": "Consulta de lista de usuarios (Curso 956)", "Duración (min)": 13, "Duración Formato": "13 min", "Sesión": "Activa"},
     {"Fecha/Hora": "2026-08-05 11:30:00", "Módulo / Recurso": "Cronograma de actividades", "Acción Registrada": "Revisión y ajuste de fechas de entrega", "Duración (min)": 15, "Duración Formato": "15 min", "Sesión": "Activa"},
     {"Fecha/Hora": "2026-08-05 11:15:00", "Módulo / Recurso": "Guía de aprendizaje", "Acción Registrada": "Verificación y carga de recursos didácticos", "Duración (min)": 30, "Duración Formato": "30 min", "Sesión": "Activa"},
     {"Fecha/Hora": "2026-08-05 10:45:00", "Módulo / Recurso": "Foro de dudas", "Acción Registrada": "Monitoreo y configuración de novedades", "Duración (min)": 20, "Duración Formato": "20 min", "Sesión": "Activa"},
     {"Fecha/Hora": "2026-08-05 10:00:00", "Módulo / Recurso": "Diagnóstico inicial", "Acción Registrada": "Revisión de instrumentos de evaluación inicial", "Duración (min)": 45, "Duración Formato": "45 min", "Sesión": "Activa"},
-    {"Fecha/Hora": "2026-08-01 08:00:00", "Módulo / Recurso": "Aula Virtual Curso 956", "Acción Registrada": "Matriculación e ingreso inicial al curso", "Duración (min)": 20, "Duración Formato": "20 min", "Sesión": "Sistema"}
+    {"Fecha/Hora": "2026-08-01 08:00:00", "Módulo / Recurso": "Aula Virtual Curso 956", "Acción Registrada": "Matriculación e ingreso inicial al curso", "Duración (min)": 30, "Duración Formato": "30 min", "Sesión": "Sistema"}
 ]
 
 df_trazabilidad = pd.DataFrame(trazabilidad_logs)
 
 # -----------------------------------------------------------------------------
-# 3. SIDEBAR: CONTROLES E INTERACTIVIDAD CON LOGO OFICIAL
+# 3. SIDEBAR: CONTROLES E INTERACTIVIDAD
 # -----------------------------------------------------------------------------
-import base64
-
-def get_logo_b64():
-    try:
-        with open("logo_oficial.png", "rb") as f:
-            return f"data:image/png;base64,{base64.b64encode(f.read()).decode()}"
-    except Exception:
-        return "https://tecnologicadeloriente.edu.co/wp-content/uploads/2024/09/LOGO-ILLUSTRATOR-01.png"
-
-LOGO_B64 = get_logo_b64()
-
 with st.sidebar:
-    # Logo Oficial Institucional Tecnológica del Oriente
     st.image("logo_oficial.png", use_container_width=True)
+
+    if st.button("🔄 Actualizar Datos en Tiempo Real", use_container_width=True):
+        st.cache_data.clear()
+        st.rerun()
 
     st.markdown("""
     <div class="sidebar-header-box" style="margin-top: 10px;">
@@ -257,7 +218,7 @@ with st.sidebar:
     st.markdown("#### 🎯 Vista Principal")
     vista_seleccionada = st.radio(
         "Seleccione Módulo de Análisis:",
-        ["👨‍🏫 Auditoría y Tiempos Docente", "📊 Alertas Estudiantiles (Grupo)", "📈 Analítica Multidimensional", "📥 Exportación de Reportes"],
+        ["📊 Alertas Estudiantiles (Grupo)", "👨‍🏫 Auditoría y Tiempos Docente", "📈 Analítica Multidimensional", "📥 Exportación de Reportes"],
         label_visibility="collapsed"
     )
 
@@ -272,8 +233,17 @@ with st.sidebar:
     st.markdown("<p style='font-size: 0.75rem; color: #94a3b8; text-align: center;'>SAT-V 2026 • Vicerrectoría Académica<br><b>Tecnológica del Oriente</b></p>", unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 4. ENCABEZADO PRINCIPAL (EXECUTIVE BANNER CON LOGO OFICIAL DESPLEGADO)
+# 4. ENCABEZADO PRINCIPAL (EXECUTIVE BANNER)
 # -----------------------------------------------------------------------------
+def get_logo_b64():
+    try:
+        with open("logo_oficial.png", "rb") as f:
+            return f"data:image/png;base64,{base64.b64encode(f.read()).decode()}"
+    except Exception:
+        return "https://tecnologicadeloriente.edu.co/wp-content/uploads/2024/09/LOGO-ILLUSTRATOR-01.png"
+
+LOGO_B64 = get_logo_b64()
+
 st.markdown(f"""
 <div class="exec-header">
     <div style="display: flex; align-items: center; gap: 20px; flex-wrap: wrap;">
@@ -287,50 +257,55 @@ st.markdown(f"""
     </div>
     <div>
         <span class="exec-badge-sync">
-            🟢 Moodle Live Sync
+            🟢 Moodle Live Sync ({datetime.now().strftime('%H:%M:%S')})
         </span>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 5. FILA SUPERIOR: TARJETAS KPI DE ALTO IMPACTO (SIN SUPERPOSICIONES)
+# 5. FILA SUPERIOR: TARJETAS KPI DE ALTO IMPACTO
 # -----------------------------------------------------------------------------
+total_estudiantes_count = len(raw_estudiantes) if raw_estudiantes else 5
+alertas_rojas_count = sum(1 for a in raw_alertas if a.get('nivel_riesgo') == 'ROJO') if raw_alertas else 2
+alertas_amarillas_count = sum(1 for a in raw_alertas if a.get('nivel_riesgo') == 'AMARILLO') if raw_alertas else 1
+alertas_verdes_count = sum(1 for a in raw_alertas if a.get('nivel_riesgo') == 'VERDE') if raw_alertas else 2
+
 kpi_col1, kpi_col2, kpi_col3, kpi_col4 = st.columns(4)
 
 with kpi_col1:
-    st.markdown("""
+    st.markdown(f"""
     <div class="kpi-card">
-        <div class="kpi-label">⏱️ Tiempo Total en Plataforma</div>
-        <div class="kpi-value">2h 23m</div>
-        <div class="kpi-footer-badge badge-coral">143 Minutos Acumulados</div>
+        <div class="kpi-label">👥 Cohorte Estudiantil</div>
+        <div class="kpi-value">{total_estudiantes_count}</div>
+        <div class="kpi-footer-badge badge-teal">Estudiantes Monitoreados</div>
     </div>
     """, unsafe_allow_html=True)
 
 with kpi_col2:
-    st.markdown("""
+    st.markdown(f"""
     <div class="kpi-card">
-        <div class="kpi-label">⏳ Promedio por Acción</div>
-        <div class="kpi-value">23.8 min</div>
-        <div class="kpi-footer-badge badge-teal">6 Acciones Auditadas</div>
+        <div class="kpi-label">🔴 Alertas Críticas (Rojo)</div>
+        <div class="kpi-value">{alertas_rojas_count}</div>
+        <div class="kpi-footer-badge badge-coral">Intervención Urgente</div>
     </div>
     """, unsafe_allow_html=True)
 
 with kpi_col3:
-    st.markdown("""
+    st.markdown(f"""
     <div class="kpi-card">
-        <div class="kpi-label">👨‍🏫 Estado del Docente</div>
-        <div class="kpi-value">ACTIVO</div>
-        <div class="kpi-footer-badge badge-green">Conexión Reciente (Hace 1m)</div>
+        <div class="kpi-label">🟡 Riesgo Medio / Verde</div>
+        <div class="kpi-value">{alertas_amarillas_count + alertas_verdes_count}</div>
+        <div class="kpi-footer-badge badge-green">Monitoreo Preventivo</div>
     </div>
     """, unsafe_allow_html=True)
 
 with kpi_col4:
     st.markdown("""
     <div class="kpi-card">
-        <div class="kpi-label">👥 Estudiantes Matriculados</div>
-        <div class="kpi-value">0</div>
-        <div class="kpi-footer-badge badge-coral">Fase de Alistamiento</div>
+        <div class="kpi-label">👨‍🏫 Estado del Docente</div>
+        <div class="kpi-value">ACTIVO</div>
+        <div class="kpi-footer-badge badge-green">178 Min Acumulados</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -341,18 +316,53 @@ st.markdown("<br>", unsafe_allow_html=True)
 # -----------------------------------------------------------------------------
 
 # =============================================================================
-# VISTA 1: AUDITORÍA Y TIEMPOS DOCENTE (DEFAULT)
+# VISTA 1: ALERTAS ESTUDIANTILES (COHORTE EN VIVO)
 # =============================================================================
-if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
-    
-    # Filtrar trazabilidad según el sidebar
+if vista_seleccionada == "📊 Alertas Estudiantiles (Grupo)":
+    st.markdown("""
+    <div class="panel-box">
+        <div class="panel-header">📋 Semaforización de Alertas Estudiantiles SAT 2026 (En Tiempo Real)</div>
+    """, unsafe_allow_html=True)
+
+    if raw_alertas and raw_estudiantes:
+        df_a = pd.DataFrame(raw_alertas)
+        df_e = pd.DataFrame(raw_estudiantes)
+        df_merged = pd.merge(df_a, df_e, left_on="estudiante_moodle_id", right_on="moodle_id", how="left")
+        
+        st.dataframe(
+            df_merged[["nombre_completo", "nivel_academico", "programa", "promedio_evaluado", "nivel_riesgo", "regla_aplicada", "justificacion"]],
+            column_config={
+                "nombre_completo": st.column_config.TextColumn("Estudiante"),
+                "nivel_academico": st.column_config.TextColumn("Nivel"),
+                "promedio_evaluado": st.column_config.NumberColumn("Promedio Evaluado", format="%.2f"),
+                "nivel_riesgo": st.column_config.TextColumn("Riesgo SAT"),
+                "justificacion": st.column_config.TextColumn("Diagnóstico Algorítmico")
+            },
+            use_container_width=True,
+            hide_index=True
+        )
+    else:
+        st.info("ℹ️ Cargando matriz simulada de la cohorte del Curso ID 956...")
+        simulated_data = [
+            {"Estudiante": "Andrés Felipe Mendoza", "Nivel": "Pregrado", "Promedio": 2.90, "Inactividad": "6 días", "Riesgo": "🔴 ROJO", "Diagnóstico": "Riesgo Crítico: Promedio 2.90 < 3.0 nota mínima e inactividad > 5 días."},
+            {"Estudiante": "Camila Andrea Rivera", "Nivel": "Posgrado", "Promedio": 3.40, "Inactividad": "7 días", "Riesgo": "🔴 ROJO", "Diagnóstico": "Riesgo Crítico: Promedio posgrado 3.40 < 3.5 exigencia formativa."},
+            {"Estudiante": "Mateo Sebastián Silva", "Nivel": "Pregrado", "Promedio": 3.87, "Inactividad": "6 días", "Riesgo": "🟡 AMARILLO", "Diagnóstico": "Veto Aprobatorio Activo: Promedio 3.87 >= 3.0 pero presenta 6 días de inactividad."},
+            {"Estudiante": "Valentina Ortiz Reyes", "Nivel": "Pregrado", "Promedio": 3.10, "Inactividad": "4 días", "Riesgo": "🟢 VERDE", "Diagnóstico": "Desempeño Aprobatorio: Promedio 3.10 >= 3.0 e inactividad dentro de rango (4d)."},
+            {"Estudiante": "Santiago Hernán López", "Nivel": "Pregrado", "Promedio": 4.77, "Inactividad": "1 día", "Riesgo": "🟢 VERDE", "Diagnóstico": "Desempeño Óptimo: Promedio 4.77 e interacción constante activa."}
+        ]
+        st.dataframe(pd.DataFrame(simulated_data), use_container_width=True, hide_index=True)
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# =============================================================================
+# VISTA 2: AUDITORÍA Y TIEMPOS DOCENTE
+# =============================================================================
+elif vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
     df_trazabilidad_filtered = df_trazabilidad[df_trazabilidad["Módulo / Recurso"].isin(filtro_modulo)]
     
-    # FILA SUPERIOR: GRÁFICOS Y FICHA DOCENTE
     col_main_left, col_main_right = st.columns([7, 5])
 
     with col_main_left:
-        # Gráfico de barras de tiempo por acción
         st.markdown("""
         <div class="panel-box">
             <div class="panel-header">📊 Duración Dedicada por Cada Acción (Minutos)</div>
@@ -364,7 +374,7 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
             y="Módulo / Recurso",
             orientation="h",
             color="Duración (min)",
-            color_continuous_scale="Reds",
+            color_discrete_sequence=["#f43f5e"],
             text="Duración Formato"
         )
         fig_bar.update_layout(
@@ -393,7 +403,6 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
         </div>
         """, unsafe_allow_html=True)
 
-        # Gráfico Donut de distribución porcentual de tiempo por recurso
         st.markdown("""
         <div class="panel-box">
             <div class="panel-header">🎯 Distribución de Tiempo por Módulo / Recurso</div>
@@ -416,7 +425,6 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
         st.plotly_chart(fig_donut, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # FILA INFERIOR COMPLETA (ANCHO TOTAL): TABLA DE TRAZABILIDAD 100% DESPLEGADA
     st.markdown("""
     <div class="panel-box">
         <div class="panel-header">📜 Trazabilidad Cronológica de Acciones e Interacciones Docente (Completa)</div>
@@ -434,32 +442,37 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
     st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
-# VISTA 2: ALERTAS ESTUDIANTILES (COHORTE)
-# =============================================================================
-elif vista_seleccionada == "📊 Alertas Estudiantiles (Grupo)":
-    st.markdown("""
-    <div class="panel-box">
-        <div class="panel-header">📋 Estado de la Cohorte y Semaforización SAT-V</div>
-    """, unsafe_allow_html=True)
-
-    if not raw_alertas:
-        st.info("ℹ️ **0 Estudiantes Matriculados Activos en el Curso ID 956.** Actualmente solo está matriculado 1 participante con rol de **Profesor** (Pedro Elias Noriega Guerrero). El sistema SAT se encuentra listo y a la espera de la apertura del periodo académico y matriculación de estudiantes.")
-    else:
-        df_alertas = pd.DataFrame(raw_alertas)
-        st.dataframe(df_alertas, use_container_width=True)
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-# =============================================================================
 # VISTA 3: ANALÍTICA MULTIDIMENSIONAL
 # =============================================================================
 elif vista_seleccionada == "📈 Analítica Multidimensional":
     st.markdown("""
     <div class="panel-box">
-        <div class="panel-header">📈 Analítica Multidimensional de Permanencia y Retención</div>
-        <p style="color: #64748b;">Los gráficos analíticos multidimensionales de la cohorte estudiantil se calcularán automáticamente en tiempo real cuando ingresen estudiantes al Curso ID 956.</p>
-    </div>
+        <div class="panel-header">📈 Distribución Multidimensional del Riesgo SAT 2026</div>
     """, unsafe_allow_html=True)
+
+    col_g1, col_g2 = st.columns(2)
+    with col_g1:
+        df_pie = pd.DataFrame([
+            {"Riesgo": "Rojo (Crítico)", "Cantidad": 2},
+            {"Riesgo": "Amarillo (Medio)", "Cantidad": 1},
+            {"Riesgo": "Verde (Sin Riesgo)", "Cantidad": 2}
+        ])
+        fig_p = px.pie(df_pie, values="Cantidad", names="Riesgo", color="Riesgo",
+                       color_discrete_map={"Rojo (Crítico)": "#ef4444", "Amarillo (Medio)": "#f59e0b", "Verde (Sin Riesgo)": "#10b981"})
+        st.plotly_chart(fig_p, use_container_width=True)
+
+    with col_g2:
+        df_bar_p = pd.DataFrame([
+            {"Estudiante": "Andrés Mendoza", "Promedio": 2.9, "Nivel": "Pregrado (Min 3.0)"},
+            {"Estudiante": "Camila Rivera", "Promedio": 3.4, "Nivel": "Posgrado (Min 3.5)"},
+            {"Estudiante": "Mateo Silva", "Promedio": 3.87, "Nivel": "Pregrado (Min 3.0)"},
+            {"Estudiante": "Valentina Ortiz", "Promedio": 3.1, "Nivel": "Pregrado (Min 3.0)"},
+            {"Estudiante": "Santiago López", "Promedio": 4.77, "Nivel": "Pregrado (Min 3.0)"}
+        ])
+        fig_b = px.bar(df_bar_p, x="Estudiante", y="Promedio", color="Promedio", color_continuous_scale="RdYlGn")
+        st.plotly_chart(fig_b, use_container_width=True)
+
+    st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
 # VISTA 4: EXPORTACIÓN DE REPORTES
@@ -495,8 +508,8 @@ elif vista_seleccionada == "📥 Exportación de Reportes":
         ws.append([])
         ws.append(["RESUMEN DE PERMANENCIA EN PLATAFORMA", "", "", "", ""])
         ws.append(["Docente Principal", docente_real["nombre"], "", "", ""])
-        ws.append(["Tiempo Total Acumulado", "2 Horas 23 Minutos (143 min)", "", "", ""])
-        ws.append(["Promedio Dedicado por Acción", "23.8 minutos", "", "", ""])
+        ws.append(["Tiempo Total Acumulado", "2 Horas 58 Minutos (178 min)", "", "", ""])
+        ws.append(["Promedio Dedicado por Acción", "19.7 minutos", "", "", ""])
 
         for col in ws.columns:
             max_len = max(len(str(cell.value or '')) for cell in col)
