@@ -122,19 +122,19 @@ st.markdown("""
     .panel-box {
         background: #ffffff;
         border-radius: 14px;
-        padding: 20px;
+        padding: 22px 24px;
         border: 1px solid #e2e8f0;
         box-shadow: 0 4px 15px -2px rgba(0, 0, 0, 0.03);
-        margin-bottom: 20px;
+        margin-bottom: 22px;
     }
 
     .panel-header {
-        font-size: 0.98rem;
-        font-weight: 700;
+        font-size: 1rem;
+        font-weight: 800;
         color: #0f172a;
-        margin-bottom: 14px;
+        margin-bottom: 16px;
         border-left: 4px solid #f43f5e;
-        padding-left: 10px;
+        padding-left: 12px;
         line-height: 1.2;
     }
 
@@ -148,10 +148,10 @@ st.markdown("""
         color: #ffffff !important;
         font-weight: 700 !important;
         font-size: 0.85rem !important;
-        padding: 12px 16px !important;
+        padding: 14px 18px !important;
     }
     .stTable td {
-        padding: 12px 16px !important;
+        padding: 14px 18px !important;
         font-size: 0.88rem !important;
         color: #334155 !important;
     }
@@ -200,7 +200,7 @@ docente_real = {
     "estado": "🟢 ACTIVO EN PLATAFORMA"
 }
 
-# REGISTROS REALES DE MOODLE DENTRO DEL CURSO ID 956 (Navegación del 06 de agosto incluida)
+# REGISTROS REALES DE MOODLE DENTRO DEL CURSO ID 956
 trazabilidad_logs = [
     {"Fecha/Hora": "2026-08-06 11:10:00", "Módulo / Recurso Moodle": "Novedades y Configuración del Curso", "Acción Registrada": "Ajuste y verificación didáctica de recursos en plataforma", "⏱️ Duración": "25 min", "Duración (min)": 25, "Estado Sesión": "🟢 Activa"},
     {"Fecha/Hora": "2026-08-06 10:45:00", "Módulo / Recurso Moodle": "Evaluación e Instrumentos", "Acción Registrada": "Revisión de guías y actividades de alistamiento", "⏱️ Duración": "20 min", "Duración (min)": 20, "Estado Sesión": "🟢 Activa"},
@@ -340,9 +340,32 @@ st.markdown("<br>", unsafe_allow_html=True)
 if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
     df_trazabilidad_filtered = df_trazabilidad[df_trazabilidad["Módulo / Recurso Moodle"].isin(filtro_modulo)]
     
-    col_main_left, col_main_right = st.columns([7, 5])
+    # FICHA DE AUDITORÍA DOCENTE EN TARJETA BANNER
+    st.markdown(f"""
+    <div class="panel-box">
+        <div class="panel-header">👤 Ficha de Auditoría Docente Real</div>
+        <div style="background: #f8fafc; padding: 18px 24px; border-radius: 12px; border: 1px solid #e2e8f0; border-left: 5px solid #f43f5e; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px;">
+            <div>
+                <p style="margin: 0; font-weight: 800; color: #0f172a; font-size: 1.15rem;">{docente_real['nombre']}</p>
+                <p style="margin: 4px 0 0 0; color: #64748b; font-size: 0.88rem;">✉️ {docente_real['email']}</p>
+            </div>
+            <div style="font-size: 0.88rem; color: #334155; line-height: 1.6;">
+                <b>Rol:</b> {docente_real['rol']} | <b>Curso:</b> {docente_real['curso']}
+            </div>
+            <div style="text-align: right;">
+                <span style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 6px 16px; border-radius: 20px; font-weight: 700; font-size: 0.85rem;">
+                    {docente_real['estado']}
+                </span>
+                <p style="margin: 6px 0 0 0; font-size: 0.78rem; color: #64748b;"><b>Último Acceso:</b> {docente_real['ultimo_acceso']}</p>
+            </div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    with col_main_left:
+    # DOS COLUMNAS BALANCEADAS (50 / 50) CON ALTURA Y MÁRGENES HOLGADOS
+    col_chart_left, col_chart_right = st.columns(2)
+
+    with col_chart_left:
         st.markdown("""
         <div class="panel-box">
             <div class="panel-header">📊 Duración Dedicada por Cada Acción (Minutos)</div>
@@ -354,53 +377,53 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
             y="Módulo / Recurso Moodle",
             orientation="h",
             color="Duración (min)",
-            color_discrete_sequence=["#f43f5e"],
+            color_continuous_scale="Reds",
             text="⏱️ Duración"
         )
         fig_bar.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Plus Jakarta Sans, sans-serif", color="#0f172a"),
-            height=320,
-            margin=dict(l=0, r=20, t=10, b=10)
+            font=dict(family="Plus Jakarta Sans, sans-serif", color="#0f172a", size=12),
+            height=380,
+            margin=dict(l=180, r=40, t=20, b=40),
+            xaxis=dict(title="Duración (Minutos)", gridcolor="#f1f5f9"),
+            yaxis=dict(title="", showgrid=False)
         )
         st.plotly_chart(fig_bar, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    with col_main_right:
-        st.markdown(f"""
-        <div class="panel-box">
-            <div class="panel-header">👤 Ficha de Auditoría Docente Real</div>
-            <div style="background: #f8fafc; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; border-left: 4px solid #f43f5e;">
-                <p style="margin: 0; font-weight: 700; color: #0f172a; font-size: 1.02rem;">{docente_real['nombre']}</p>
-                <p style="margin: 3px 0 0 0; color: #64748b; font-size: 0.85rem;">✉️ {docente_real['email']}</p>
-                <p style="margin: 10px 0 0 0; color: #334155; font-size: 0.88rem; line-height: 1.6;">
-                    <b>Rol:</b> {docente_real['rol']}<br>
-                    <b>Fecha Matriculación:</b> {docente_real['fecha_matriculacion']}<br>
-                    <b>Último Acceso Moodle:</b> {docente_real['ultimo_acceso']}
-                </p>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
+    with col_chart_right:
         st.markdown("""
         <div class="panel-box">
-            <div class="panel-header">🎯 Distribución de Tiempo por Módulo / Recurso</div>
+            <div class="panel-header">🎯 Distribución Porcentual de Tiempo por Módulo / Recurso</div>
         """, unsafe_allow_html=True)
 
         fig_donut = px.pie(
             df_trazabilidad_filtered,
             values="Duración (min)",
             names="Módulo / Recurso Moodle",
-            hole=0.5,
-            color_discrete_sequence=["#f43f5e", "#06b6d4", "#3b82f6", "#10b981", "#8b5cf6", "#f59e0b"]
+            hole=0.48,
+            color_discrete_sequence=["#f43f5e", "#06b6d4", "#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#eab308", "#ec4899"]
+        )
+        fig_donut.update_traces(
+            textposition='inside',
+            textinfo='percent',
+            hovertemplate="<b>%{label}</b><br>Tiempo: %{value} min (%{percent})"
         )
         fig_donut.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Plus Jakarta Sans, sans-serif", color="#0f172a"),
-            height=200,
-            margin=dict(l=0, r=0, t=10, b=10)
+            font=dict(family="Plus Jakarta Sans, sans-serif", color="#0f172a", size=11),
+            height=380,
+            margin=dict(l=20, r=20, t=20, b=60),
+            legend=dict(
+                orientation="h",
+                yanchor="top",
+                y=-0.12,
+                xanchor="center",
+                x=0.5,
+                font=dict(size=10)
+            )
         )
         st.plotly_chart(fig_donut, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
@@ -471,8 +494,8 @@ elif vista_seleccionada == "📥 Exportación de Reportes":
         headers = ["Fecha / Hora", "Módulo / Recurso Moodle", "Acción Registrada", "Duración (min)", "Estado Sesión"]
         ws.append(headers)
 
-        header_font = Font(bold=True, color="FFFFFF")
         header_fill = PatternFill(start_color="1E293B", end_color="1E293B", fill_type="solid")
+        header_font = Font(bold=True, color="FFFFFF")
 
         for col_idx in range(1, len(headers) + 1):
             cell = ws.cell(row=1, column=col_idx)
