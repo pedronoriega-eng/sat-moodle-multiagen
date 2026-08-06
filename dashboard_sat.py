@@ -165,7 +165,6 @@ def fetch_supabase(table_name: str):
 
 raw_alertas = fetch_supabase("historial_alertas_sat")
 raw_estudiantes = fetch_supabase("estudiantes")
-raw_interacciones = fetch_supabase("moodle_interacciones")
 
 # Datos REALES de Auditoría Docente (Pedro Elias Noriega Guerrero - Curso 956)
 docente_real = {
@@ -218,7 +217,7 @@ with st.sidebar:
     st.markdown("#### 🎯 Vista Principal")
     vista_seleccionada = st.radio(
         "Seleccione Módulo de Análisis:",
-        ["📊 Alertas Estudiantiles (Grupo)", "👨‍🏫 Auditoría y Tiempos Docente", "📈 Analítica Multidimensional", "📥 Exportación de Reportes"],
+        ["👨‍🏫 Auditoría y Tiempos Docente", "📊 Alertas Estudiantiles (Grupo)", "📈 Analítica Multidimensional", "📥 Exportación de Reportes"],
         label_visibility="collapsed"
     )
 
@@ -264,21 +263,21 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# 5. FILA SUPERIOR: TARJETAS KPI DE ALTO IMPACTO
+# 5. FILA SUPERIOR: TARJETAS KPI DE ALTO IMPACTO (DATOS ESTRICTOS REALES)
 # -----------------------------------------------------------------------------
-total_estudiantes_count = len(raw_estudiantes) if raw_estudiantes else 5
-alertas_rojas_count = sum(1 for a in raw_alertas if a.get('nivel_riesgo') == 'ROJO') if raw_alertas else 2
-alertas_amarillas_count = sum(1 for a in raw_alertas if a.get('nivel_riesgo') == 'AMARILLO') if raw_alertas else 1
-alertas_verdes_count = sum(1 for a in raw_alertas if a.get('nivel_riesgo') == 'VERDE') if raw_alertas else 2
+total_estudiantes_count = len(raw_estudiantes)
+alertas_rojas_count = sum(1 for a in raw_alertas if a.get('nivel_riesgo') == 'ROJO')
+alertas_amarillas_count = sum(1 for a in raw_alertas if a.get('nivel_riesgo') == 'AMARILLO')
+alertas_verdes_count = sum(1 for a in raw_alertas if a.get('nivel_riesgo') == 'VERDE')
 
 kpi_col1, kpi_col2, kpi_col3, kpi_col4 = st.columns(4)
 
 with kpi_col1:
     st.markdown(f"""
     <div class="kpi-card">
-        <div class="kpi-label">👥 Cohorte Estudiantil</div>
+        <div class="kpi-label">👥 Estudiantes Matriculados</div>
         <div class="kpi-value">{total_estudiantes_count}</div>
-        <div class="kpi-footer-badge badge-teal">Estudiantes Monitoreados</div>
+        <div class="kpi-footer-badge badge-coral">Fase de Alistamiento</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -287,7 +286,7 @@ with kpi_col2:
     <div class="kpi-card">
         <div class="kpi-label">🔴 Alertas Críticas (Rojo)</div>
         <div class="kpi-value">{alertas_rojas_count}</div>
-        <div class="kpi-footer-badge badge-coral">Intervención Urgente</div>
+        <div class="kpi-footer-badge badge-coral">0 Casos Detectados</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -296,7 +295,7 @@ with kpi_col3:
     <div class="kpi-card">
         <div class="kpi-label">🟡 Riesgo Medio / Verde</div>
         <div class="kpi-value">{alertas_amarillas_count + alertas_verdes_count}</div>
-        <div class="kpi-footer-badge badge-green">Monitoreo Preventivo</div>
+        <div class="kpi-footer-badge badge-green">0 Casos Detectados</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -316,48 +315,9 @@ st.markdown("<br>", unsafe_allow_html=True)
 # -----------------------------------------------------------------------------
 
 # =============================================================================
-# VISTA 1: ALERTAS ESTUDIANTILES (COHORTE EN VIVO)
+# VISTA 1: AUDITORÍA Y TIEMPOS DOCENTE (DEFAULT REAL)
 # =============================================================================
-if vista_seleccionada == "📊 Alertas Estudiantiles (Grupo)":
-    st.markdown("""
-    <div class="panel-box">
-        <div class="panel-header">📋 Semaforización de Alertas Estudiantiles SAT 2026 (En Tiempo Real)</div>
-    """, unsafe_allow_html=True)
-
-    if raw_alertas and raw_estudiantes:
-        df_a = pd.DataFrame(raw_alertas)
-        df_e = pd.DataFrame(raw_estudiantes)
-        df_merged = pd.merge(df_a, df_e, left_on="estudiante_moodle_id", right_on="moodle_id", how="left")
-        
-        st.dataframe(
-            df_merged[["nombre_completo", "nivel_academico", "programa", "promedio_evaluado", "nivel_riesgo", "regla_aplicada", "justificacion"]],
-            column_config={
-                "nombre_completo": st.column_config.TextColumn("Estudiante"),
-                "nivel_academico": st.column_config.TextColumn("Nivel"),
-                "promedio_evaluado": st.column_config.NumberColumn("Promedio Evaluado", format="%.2f"),
-                "nivel_riesgo": st.column_config.TextColumn("Riesgo SAT"),
-                "justificacion": st.column_config.TextColumn("Diagnóstico Algorítmico")
-            },
-            use_container_width=True,
-            hide_index=True
-        )
-    else:
-        st.info("ℹ️ Cargando matriz simulada de la cohorte del Curso ID 956...")
-        simulated_data = [
-            {"Estudiante": "Andrés Felipe Mendoza", "Nivel": "Pregrado", "Promedio": 2.90, "Inactividad": "6 días", "Riesgo": "🔴 ROJO", "Diagnóstico": "Riesgo Crítico: Promedio 2.90 < 3.0 nota mínima e inactividad > 5 días."},
-            {"Estudiante": "Camila Andrea Rivera", "Nivel": "Posgrado", "Promedio": 3.40, "Inactividad": "7 días", "Riesgo": "🔴 ROJO", "Diagnóstico": "Riesgo Crítico: Promedio posgrado 3.40 < 3.5 exigencia formativa."},
-            {"Estudiante": "Mateo Sebastián Silva", "Nivel": "Pregrado", "Promedio": 3.87, "Inactividad": "6 días", "Riesgo": "🟡 AMARILLO", "Diagnóstico": "Veto Aprobatorio Activo: Promedio 3.87 >= 3.0 pero presenta 6 días de inactividad."},
-            {"Estudiante": "Valentina Ortiz Reyes", "Nivel": "Pregrado", "Promedio": 3.10, "Inactividad": "4 días", "Riesgo": "🟢 VERDE", "Diagnóstico": "Desempeño Aprobatorio: Promedio 3.10 >= 3.0 e inactividad dentro de rango (4d)."},
-            {"Estudiante": "Santiago Hernán López", "Nivel": "Pregrado", "Promedio": 4.77, "Inactividad": "1 día", "Riesgo": "🟢 VERDE", "Diagnóstico": "Desempeño Óptimo: Promedio 4.77 e interacción constante activa."}
-        ]
-        st.dataframe(pd.DataFrame(simulated_data), use_container_width=True, hide_index=True)
-
-    st.markdown("</div>", unsafe_allow_html=True)
-
-# =============================================================================
-# VISTA 2: AUDITORÍA Y TIEMPOS DOCENTE
-# =============================================================================
-elif vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
+if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
     df_trazabilidad_filtered = df_trazabilidad[df_trazabilidad["Módulo / Recurso"].isin(filtro_modulo)]
     
     col_main_left, col_main_right = st.columns([7, 5])
@@ -442,35 +402,51 @@ elif vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
     st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
+# VISTA 2: ALERTAS ESTUDIANTILES (COHORTE REAL DEL CURSO 956)
+# =============================================================================
+elif vista_seleccionada == "📊 Alertas Estudiantiles (Grupo)":
+    st.markdown("""
+    <div class="panel-box">
+        <div class="panel-header">📋 Estado de la Cohorte y Semaforización SAT-V (Curso ID 956)</div>
+    """, unsafe_allow_html=True)
+
+    if raw_alertas and raw_estudiantes:
+        df_a = pd.DataFrame(raw_alertas)
+        df_e = pd.DataFrame(raw_estudiantes)
+        df_merged = pd.merge(df_a, df_e, left_on="estudiante_moodle_id", right_on="moodle_id", how="left")
+        
+        st.dataframe(
+            df_merged[["nombre_completo", "nivel_academico", "programa", "promedio_evaluado", "nivel_riesgo", "regla_aplicada", "justificacion"]],
+            column_config={
+                "nombre_completo": st.column_config.TextColumn("Estudiante"),
+                "nivel_academico": st.column_config.TextColumn("Nivel"),
+                "promedio_evaluado": st.column_config.NumberColumn("Promedio Evaluado", format="%.2f"),
+                "nivel_riesgo": st.column_config.TextColumn("Riesgo SAT"),
+                "justificacion": st.column_config.TextColumn("Diagnóstico Algorítmico")
+            },
+            use_container_width=True,
+            hide_index=True
+        )
+    else:
+        st.info("ℹ️ **0 Estudiantes Matriculados Activos en el Curso ID 956.** Actualmente el aula virtual se encuentra en fase de alistamiento docente con 1 participante matriculado (Profesor Titular: Pedro Elias Noriega Guerrero). Cuando la dirección académica matricule estudiantes en Moodle, el motor SAT calculará y desplegará en tiempo real el nivel de riesgo de la cohorte.")
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# =============================================================================
 # VISTA 3: ANALÍTICA MULTIDIMENSIONAL
 # =============================================================================
 elif vista_seleccionada == "📈 Analítica Multidimensional":
     st.markdown("""
     <div class="panel-box">
-        <div class="panel-header">📈 Distribución Multidimensional del Riesgo SAT 2026</div>
+        <div class="panel-header">📈 Analítica Multidimensional de Permanencia y Retención</div>
     """, unsafe_allow_html=True)
 
-    col_g1, col_g2 = st.columns(2)
-    with col_g1:
-        df_pie = pd.DataFrame([
-            {"Riesgo": "Rojo (Crítico)", "Cantidad": 2},
-            {"Riesgo": "Amarillo (Medio)", "Cantidad": 1},
-            {"Riesgo": "Verde (Sin Riesgo)", "Cantidad": 2}
-        ])
-        fig_p = px.pie(df_pie, values="Cantidad", names="Riesgo", color="Riesgo",
-                       color_discrete_map={"Rojo (Crítico)": "#ef4444", "Amarillo (Medio)": "#f59e0b", "Verde (Sin Riesgo)": "#10b981"})
+    if raw_alertas:
+        df_pie = pd.DataFrame(raw_alertas)['nivel_riesgo'].value_counts().reset_index()
+        fig_p = px.pie(df_pie, values="count", names="nivel_riesgo", title="Distribución de Riesgo Real")
         st.plotly_chart(fig_p, use_container_width=True)
-
-    with col_g2:
-        df_bar_p = pd.DataFrame([
-            {"Estudiante": "Andrés Mendoza", "Promedio": 2.9, "Nivel": "Pregrado (Min 3.0)"},
-            {"Estudiante": "Camila Rivera", "Promedio": 3.4, "Nivel": "Posgrado (Min 3.5)"},
-            {"Estudiante": "Mateo Silva", "Promedio": 3.87, "Nivel": "Pregrado (Min 3.0)"},
-            {"Estudiante": "Valentina Ortiz", "Promedio": 3.1, "Nivel": "Pregrado (Min 3.0)"},
-            {"Estudiante": "Santiago López", "Promedio": 4.77, "Nivel": "Pregrado (Min 3.0)"}
-        ])
-        fig_b = px.bar(df_bar_p, x="Estudiante", y="Promedio", color="Promedio", color_continuous_scale="RdYlGn")
-        st.plotly_chart(fig_b, use_container_width=True)
+    else:
+        st.info("ℹ️ **Sin datos estudiantiles matriculados.** Los gráficos analíticos multidimensionales se generarán automáticamente en tiempo real una vez ingresen los estudiantes al Curso ID 956.")
 
     st.markdown("</div>", unsafe_allow_html=True)
 
