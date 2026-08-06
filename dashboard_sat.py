@@ -137,6 +137,25 @@ st.markdown("""
         padding-left: 10px;
         line-height: 1.2;
     }
+
+    /* Estilos para tablas estáticas completamente desplegadas */
+    .stTable table {
+        width: 100% !important;
+        border-radius: 10px !important;
+        overflow: hidden !important;
+    }
+    .stTable th {
+        background-color: #0f172a !important;
+        color: #ffffff !important;
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
+        padding: 12px 16px !important;
+    }
+    .stTable td {
+        padding: 12px 16px !important;
+        font-size: 0.88rem !important;
+        color: #334155 !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -181,14 +200,14 @@ docente_real = {
     "estado": "🟢 ACTIVO EN PLATAFORMA"
 }
 
-# REGISTROS REALES DE MOODLE DENTRO DEL CURSO ID 956 (Sin datos artificiales fuera de Moodle)
+# REGISTROS REALES DE MOODLE DENTRO DEL CURSO ID 956
 trazabilidad_logs = [
-    {"Fecha/Hora": "2026-08-05 11:43:00", "Módulo / Recurso": "Participantes del Curso", "Acción Registrada": "Consulta de lista de usuarios (1 participante)", "Duración (min)": 13, "Duración Formato": "13 min", "Sesión": "Activa"},
-    {"Fecha/Hora": "2026-08-05 11:30:00", "Módulo / Recurso": "Cronograma de actividades", "Acción Registrada": "Revisión y ajuste de fechas de entrega", "Duración (min)": 15, "Duración Formato": "15 min", "Sesión": "Activa"},
-    {"Fecha/Hora": "2026-08-05 11:15:00", "Módulo / Recurso": "Guía de aprendizaje", "Acción Registrada": "Verificación y carga de recursos didácticos", "Duración (min)": 30, "Duración Formato": "30 min", "Sesión": "Activa"},
-    {"Fecha/Hora": "2026-08-05 10:45:00", "Módulo / Recurso": "Foro de dudas", "Acción Registrada": "Monitoreo y configuración de novedades", "Duración (min)": 20, "Duración Formato": "20 min", "Sesión": "Activa"},
-    {"Fecha/Hora": "2026-08-05 10:00:00", "Módulo / Recurso": "Diagnóstico inicial", "Acción Registrada": "Revisión de instrumentos de evaluación inicial", "Duración (min)": 45, "Duración Formato": "45 min", "Sesión": "Activa"},
-    {"Fecha/Hora": "2026-08-01 08:00:00", "Módulo / Recurso": "Aula Virtual Curso 956", "Acción Registrada": "Matriculación e ingreso inicial al curso", "Duración (min)": 20, "Duración Formato": "20 min", "Sesión": "Sistema"}
+    {"Fecha/Hora": "2026-08-05 11:43:00", "Módulo / Recurso Moodle": "Participantes del Curso", "Acción Registrada": "Consulta de lista de usuarios (1 participante)", "⏱️ Duración": "13 min", "Duración (min)": 13, "Estado Sesión": "🟢 Activa"},
+    {"Fecha/Hora": "2026-08-05 11:30:00", "Módulo / Recurso Moodle": "Cronograma de actividades", "Acción Registrada": "Revisión y ajuste de fechas de entrega", "⏱️ Duración": "15 min", "Duración (min)": 15, "Estado Sesión": "🟢 Activa"},
+    {"Fecha/Hora": "2026-08-05 11:15:00", "Módulo / Recurso Moodle": "Guía de aprendizaje", "Acción Registrada": "Verificación y carga de recursos didácticos", "⏱️ Duración": "30 min", "Duración (min)": 30, "Estado Sesión": "🟢 Activa"},
+    {"Fecha/Hora": "2026-08-05 10:45:00", "Módulo / Recurso Moodle": "Foro de dudas", "Acción Registrada": "Monitoreo y configuración de novedades", "⏱️ Duración": "20 min", "Duración (min)": 20, "Estado Sesión": "🟢 Activa"},
+    {"Fecha/Hora": "2026-08-05 10:00:00", "Módulo / Recurso Moodle": "Diagnóstico inicial", "Acción Registrada": "Revisión de instrumentos de evaluación inicial", "⏱️ Duración": "45 min", "Duración (min)": 45, "Estado Sesión": "🟢 Activa"},
+    {"Fecha/Hora": "2026-08-01 08:00:00", "Módulo / Recurso Moodle": "Aula Virtual Curso 956", "Acción Registrada": "Matriculación e ingreso inicial al curso", "⏱️ Duración": "20 min", "Duración (min)": 20, "Estado Sesión": "🟢 Sistema"}
 ]
 
 df_trazabilidad = pd.DataFrame(trazabilidad_logs)
@@ -223,8 +242,8 @@ with st.sidebar:
     st.markdown("#### ⚙️ Filtros de Recurso")
     filtro_modulo = st.multiselect(
         "Filtrar Módulos Auditados:",
-        options=df_trazabilidad["Módulo / Recurso"].unique(),
-        default=df_trazabilidad["Módulo / Recurso"].unique()
+        options=df_trazabilidad["Módulo / Recurso Moodle"].unique(),
+        default=df_trazabilidad["Módulo / Recurso Moodle"].unique()
     )
 
     st.markdown("---")
@@ -310,42 +329,6 @@ with kpi_col4:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
-# FUNCION PARA RENDERIZAR TABLA HTML 100% COMPLETA SIN BARRAS DE DESPLAZAMIENTO
-# -----------------------------------------------------------------------------
-def render_trazabilidad_html(df):
-    rows_html = ""
-    for _, row in df.iterrows():
-        rows_html += f"""
-        <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff;">
-            <td style="padding: 14px 16px; font-weight: 600; color: #0f172a; white-space: nowrap;">{row['Fecha/Hora']}</td>
-            <td style="padding: 14px 16px; color: #1e293b; font-weight: 600;">{row['Módulo / Recurso']}</td>
-            <td style="padding: 14px 16px; color: #475569; line-height: 1.5;">{row['Acción Registrada']}</td>
-            <td style="padding: 14px 16px; font-weight: 700; color: #f43f5e; text-align: center; white-space: nowrap;">{row['Duración Formato']}</td>
-            <td style="padding: 14px 16px; text-align: center; white-space: nowrap;"><span style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 4px 12px; border-radius: 12px; font-weight: 700; font-size: 0.78rem;">🟢 {row['Sesión']}</span></td>
-        </tr>
-        """
-    
-    html = f"""
-    <div style="width: 100%; background: #ffffff; border-radius: 14px; border: 1px solid #e2e8f0; overflow: hidden; margin-top: 10px; box-shadow: 0 4px 15px -2px rgba(0,0,0,0.03);">
-        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; font-family: 'Plus Jakarta Sans', sans-serif;">
-            <thead>
-                <tr style="background: #0f172a; color: #ffffff;">
-                    <th style="padding: 16px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; width: 18%;">Fecha / Hora</th>
-                    <th style="padding: 16px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; width: 22%;">Módulo / Recurso Moodle</th>
-                    <th style="padding: 16px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; width: 38%;">Acción Registrada</th>
-                    <th style="padding: 16px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; width: 12%;">⏱️ Duración</th>
-                    <th style="padding: 16px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; width: 10%;">Estado</th>
-                </tr>
-            </thead>
-            <tbody>
-                {rows_html}
-            </tbody>
-        </table>
-    </div>
-    """
-    return html
-
-# -----------------------------------------------------------------------------
 # 6. CONTENIDO DINÁMICO SEGÚN LA VISTA SELECCIONADA
 # -----------------------------------------------------------------------------
 
@@ -353,7 +336,7 @@ def render_trazabilidad_html(df):
 # VISTA 1: AUDITORÍA Y TIEMPOS DOCENTE (DEFAULT REAL)
 # =============================================================================
 if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
-    df_trazabilidad_filtered = df_trazabilidad[df_trazabilidad["Módulo / Recurso"].isin(filtro_modulo)]
+    df_trazabilidad_filtered = df_trazabilidad[df_trazabilidad["Módulo / Recurso Moodle"].isin(filtro_modulo)]
     
     col_main_left, col_main_right = st.columns([7, 5])
 
@@ -366,11 +349,11 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
         fig_bar = px.bar(
             df_trazabilidad_filtered,
             x="Duración (min)",
-            y="Módulo / Recurso",
+            y="Módulo / Recurso Moodle",
             orientation="h",
             color="Duración (min)",
             color_discrete_sequence=["#f43f5e"],
-            text="Duración Formato"
+            text="⏱️ Duración"
         )
         fig_bar.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
@@ -406,7 +389,7 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
         fig_donut = px.pie(
             df_trazabilidad_filtered,
             values="Duración (min)",
-            names="Módulo / Recurso",
+            names="Módulo / Recurso Moodle",
             hole=0.5,
             color_discrete_sequence=["#f43f5e", "#06b6d4", "#3b82f6", "#10b981", "#8b5cf6", "#f59e0b"]
         )
@@ -420,14 +403,14 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
         st.plotly_chart(fig_donut, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # TABLA DESPLEGADA 100% COMPLETA SIN BARRAS DE DESPLAZAMIENTO
+    # TABLA NATIVA DE STREAMLIT (100% DESPLEGADA, SIN BARRAS DE DESPLAZAMIENTO NI CÓDIGO ESCAPADO)
     st.markdown("""
     <div class="panel-box">
         <div class="panel-header">📜 Trazabilidad Cronológica de Acciones e Interacciones Docente (Curso ID 956)</div>
     """, unsafe_allow_html=True)
 
-    table_html_full = render_trazabilidad_html(df_trazabilidad_filtered)
-    st.markdown(table_html_full, unsafe_allow_html=True)
+    df_display = df_trazabilidad_filtered[["Fecha/Hora", "Módulo / Recurso Moodle", "Acción Registrada", "⏱️ Duración", "Estado Sesión"]]
+    st.table(df_display)
     st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
@@ -443,19 +426,7 @@ elif vista_seleccionada == "📊 Alertas Estudiantiles (Grupo)":
         df_a = pd.DataFrame(raw_alertas)
         df_e = pd.DataFrame(raw_estudiantes)
         df_merged = pd.merge(df_a, df_e, left_on="estudiante_moodle_id", right_on="moodle_id", how="left")
-        
-        st.dataframe(
-            df_merged[["nombre_completo", "nivel_academico", "programa", "promedio_evaluado", "nivel_riesgo", "regla_aplicada", "justificacion"]],
-            column_config={
-                "nombre_completo": st.column_config.TextColumn("Estudiante"),
-                "nivel_academico": st.column_config.TextColumn("Nivel"),
-                "promedio_evaluado": st.column_config.NumberColumn("Promedio Evaluado", format="%.2f"),
-                "nivel_riesgo": st.column_config.TextColumn("Riesgo SAT"),
-                "justificacion": st.column_config.TextColumn("Diagnóstico Algorítmico")
-            },
-            use_container_width=True,
-            hide_index=True
-        )
+        st.table(df_merged[["nombre_completo", "nivel_academico", "programa", "promedio_evaluado", "nivel_riesgo", "regla_aplicada"]])
     else:
         st.info("ℹ️ **0 Estudiantes Matriculados Activos en el Curso ID 956.** Actualmente el aula virtual se encuentra en fase de alistamiento docente con 1 participante matriculado (Profesor Titular: Pedro Elias Noriega Guerrero). Cuando la dirección académica matricule estudiantes en Moodle, el motor SAT calculará y desplegará en tiempo real el nivel de riesgo de la cohorte.")
 
@@ -508,7 +479,7 @@ elif vista_seleccionada == "📥 Exportación de Reportes":
             cell.alignment = Alignment(horizontal="center", vertical="center")
 
         for row in trazabilidad_logs:
-            ws.append([row["Fecha/Hora"], row["Módulo / Recurso"], row["Acción Registrada"], row["Duración (min)"], row["Sesión"]])
+            ws.append([row["Fecha/Hora"], row["Módulo / Recurso Moodle"], row["Acción Registrada"], row["Duración (min)"], row["Estado Sesión"]])
 
         ws.append([])
         ws.append(["RESUMEN DE PERMANENCIA EN PLATAFORMA", "", "", "", ""])
