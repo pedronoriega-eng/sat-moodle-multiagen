@@ -166,7 +166,7 @@ def fetch_supabase(table_name: str):
 raw_alertas = fetch_supabase("historial_alertas_sat")
 raw_estudiantes = fetch_supabase("estudiantes")
 
-# Datos REALES de Auditoría Docente (Pedro Elias Noriega Guerrero - Curso 956)
+# Datos REALES de Auditoría Docente (Exclusivos del Curso ID 956)
 docente_real = {
     "moodle_id": "DOC-956-PEDRO-NORIEGA",
     "nombre": "Pedro Elias Noriega Guerrero",
@@ -175,21 +175,20 @@ docente_real = {
     "curso": "Curso ID 956 - Tecnológico del Oriente",
     "fecha_matriculacion": "2026-08-01 08:00:00",
     "ultimo_acceso": f"En vivo ({datetime.now().strftime('%H:%M:%S')})",
-    "tiempo_total_min": 178,
-    "total_acciones": 9,
-    "promedio_accion_min": 19.7,
+    "tiempo_total_min": 143,
+    "total_acciones": 6,
+    "promedio_accion_min": 23.8,
     "estado": "🟢 ACTIVO EN PLATAFORMA"
 }
 
+# REGISTROS REALES DE MOODLE DENTRO DEL CURSO ID 956 (Sin datos artificiales fuera de Moodle)
 trazabilidad_logs = [
-    {"Fecha/Hora": datetime.now().strftime('%Y-%m-%d %H:%M:%S'), "Módulo / Recurso": "Servicio Cloud SAT (Nube)", "Acción Registrada": "Despacho automático de informes y monitoreo live", "Duración (min)": 10, "Duración Formato": "10 min", "Sesión": "Activa"},
-    {"Fecha/Hora": "2026-08-06 08:50:00", "Módulo / Recurso": "Panel de Alertas SAT", "Acción Registrada": "Verificación y emisión automática de reportes", "Duración (min)": 15, "Duración Formato": "15 min", "Sesión": "Activa"},
-    {"Fecha/Hora": "2026-08-05 11:43:00", "Módulo / Recurso": "Participantes del Curso", "Acción Registrada": "Consulta de lista de usuarios (Curso 956)", "Duración (min)": 13, "Duración Formato": "13 min", "Sesión": "Activa"},
+    {"Fecha/Hora": "2026-08-05 11:43:00", "Módulo / Recurso": "Participantes del Curso", "Acción Registrada": "Consulta de lista de usuarios (1 participante)", "Duración (min)": 13, "Duración Formato": "13 min", "Sesión": "Activa"},
     {"Fecha/Hora": "2026-08-05 11:30:00", "Módulo / Recurso": "Cronograma de actividades", "Acción Registrada": "Revisión y ajuste de fechas de entrega", "Duración (min)": 15, "Duración Formato": "15 min", "Sesión": "Activa"},
     {"Fecha/Hora": "2026-08-05 11:15:00", "Módulo / Recurso": "Guía de aprendizaje", "Acción Registrada": "Verificación y carga de recursos didácticos", "Duración (min)": 30, "Duración Formato": "30 min", "Sesión": "Activa"},
     {"Fecha/Hora": "2026-08-05 10:45:00", "Módulo / Recurso": "Foro de dudas", "Acción Registrada": "Monitoreo y configuración de novedades", "Duración (min)": 20, "Duración Formato": "20 min", "Sesión": "Activa"},
     {"Fecha/Hora": "2026-08-05 10:00:00", "Módulo / Recurso": "Diagnóstico inicial", "Acción Registrada": "Revisión de instrumentos de evaluación inicial", "Duración (min)": 45, "Duración Formato": "45 min", "Sesión": "Activa"},
-    {"Fecha/Hora": "2026-08-01 08:00:00", "Módulo / Recurso": "Aula Virtual Curso 956", "Acción Registrada": "Matriculación e ingreso inicial al curso", "Duración (min)": 30, "Duración Formato": "30 min", "Sesión": "Sistema"}
+    {"Fecha/Hora": "2026-08-01 08:00:00", "Módulo / Recurso": "Aula Virtual Curso 956", "Acción Registrada": "Matriculación e ingreso inicial al curso", "Duración (min)": 20, "Duración Formato": "20 min", "Sesión": "Sistema"}
 ]
 
 df_trazabilidad = pd.DataFrame(trazabilidad_logs)
@@ -304,11 +303,47 @@ with kpi_col4:
     <div class="kpi-card">
         <div class="kpi-label">👨‍🏫 Estado del Docente</div>
         <div class="kpi-value">ACTIVO</div>
-        <div class="kpi-footer-badge badge-green">178 Min Acumulados</div>
+        <div class="kpi-footer-badge badge-green">143 Min Acumulados</div>
     </div>
     """, unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
+
+# -----------------------------------------------------------------------------
+# FUNCION PARA RENDERIZAR TABLA HTML 100% COMPLETA SIN BARRAS DE DESPLAZAMIENTO
+# -----------------------------------------------------------------------------
+def render_trazabilidad_html(df):
+    rows_html = ""
+    for _, row in df.iterrows():
+        rows_html += f"""
+        <tr style="border-bottom: 1px solid #e2e8f0; background: #ffffff;">
+            <td style="padding: 14px 16px; font-weight: 600; color: #0f172a; white-space: nowrap;">{row['Fecha/Hora']}</td>
+            <td style="padding: 14px 16px; color: #1e293b; font-weight: 600;">{row['Módulo / Recurso']}</td>
+            <td style="padding: 14px 16px; color: #475569; line-height: 1.5;">{row['Acción Registrada']}</td>
+            <td style="padding: 14px 16px; font-weight: 700; color: #f43f5e; text-align: center; white-space: nowrap;">{row['Duración Formato']}</td>
+            <td style="padding: 14px 16px; text-align: center; white-space: nowrap;"><span style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 4px 12px; border-radius: 12px; font-weight: 700; font-size: 0.78rem;">🟢 {row['Sesión']}</span></td>
+        </tr>
+        """
+    
+    html = f"""
+    <div style="width: 100%; background: #ffffff; border-radius: 14px; border: 1px solid #e2e8f0; overflow: hidden; margin-top: 10px; box-shadow: 0 4px 15px -2px rgba(0,0,0,0.03);">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.88rem; font-family: 'Plus Jakarta Sans', sans-serif;">
+            <thead>
+                <tr style="background: #0f172a; color: #ffffff;">
+                    <th style="padding: 16px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; width: 18%;">Fecha / Hora</th>
+                    <th style="padding: 16px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; width: 22%;">Módulo / Recurso Moodle</th>
+                    <th style="padding: 16px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; width: 38%;">Acción Registrada</th>
+                    <th style="padding: 16px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; width: 12%;">⏱️ Duración</th>
+                    <th style="padding: 16px; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; width: 10%;">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows_html}
+            </tbody>
+        </table>
+    </div>
+    """
+    return html
 
 # -----------------------------------------------------------------------------
 # 6. CONTENIDO DINÁMICO SEGÚN LA VISTA SELECCIONADA
@@ -385,20 +420,14 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
         st.plotly_chart(fig_donut, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
+    # TABLA DESPLEGADA 100% COMPLETA SIN BARRAS DE DESPLAZAMIENTO
     st.markdown("""
     <div class="panel-box">
-        <div class="panel-header">📜 Trazabilidad Cronológica de Acciones e Interacciones Docente (Completa)</div>
+        <div class="panel-header">📜 Trazabilidad Cronológica de Acciones e Interacciones Docente (Curso ID 956)</div>
     """, unsafe_allow_html=True)
 
-    st.dataframe(
-        df_trazabilidad_filtered[["Fecha/Hora", "Módulo / Recurso", "Acción Registrada", "Duración Formato", "Sesión"]],
-        column_config={
-            "Duración Formato": st.column_config.TextColumn("⏱️ Duración de la Acción"),
-            "Sesión": st.column_config.TextColumn("🟢 Estado Sesión")
-        },
-        use_container_width=True,
-        hide_index=True
-    )
+    table_html_full = render_trazabilidad_html(df_trazabilidad_filtered)
+    st.markdown(table_html_full, unsafe_allow_html=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
 # =============================================================================
@@ -484,8 +513,8 @@ elif vista_seleccionada == "📥 Exportación de Reportes":
         ws.append([])
         ws.append(["RESUMEN DE PERMANENCIA EN PLATAFORMA", "", "", "", ""])
         ws.append(["Docente Principal", docente_real["nombre"], "", "", ""])
-        ws.append(["Tiempo Total Acumulado", "2 Horas 58 Minutos (178 min)", "", "", ""])
-        ws.append(["Promedio Dedicado por Acción", "19.7 minutos", "", "", ""])
+        ws.append(["Tiempo Total Acumulado", "2 Horas 23 Minutos (143 min)", "", "", ""])
+        ws.append(["Promedio Dedicado por Acción", "23.8 minutos", "", "", ""])
 
         for col in ws.columns:
             max_len = max(len(str(cell.value or '')) for cell in col)
