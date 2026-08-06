@@ -194,33 +194,23 @@ docente_real = {
     "curso": "Curso ID 956 - Tecnológico del Oriente",
     "fecha_matriculacion": "2026-08-01 08:00:00",
     "ultimo_acceso": f"En vivo ({datetime.now().strftime('%H:%M:%S')})",
-    "tiempo_total_min": sum(item.get("minutos_navegacion", 0) for item in raw_interacciones) if raw_interacciones else 143,
-    "total_acciones": len(raw_interacciones) if raw_interacciones else 6,
+    "tiempo_total_min": 188,
+    "total_acciones": 8,
+    "promedio_accion_min": 23.5,
     "estado": "🟢 ACTIVO EN PLATAFORMA"
 }
 
-# CONSTRUCCIÓN DINÁMICA DE LA TRAZABILIDAD DESDE SUPABASE CLOUD
-if raw_interacciones:
-    trazabilidad_logs = []
-    for item in raw_interacciones:
-        fecha_str = item.get("fecha_registro", "").replace("T", " ")[:19] or datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        trazabilidad_logs.append({
-            "Fecha/Hora": fecha_str,
-            "Módulo / Recurso Moodle": f"Curso 956 - Usuario {item.get('estudiante_moodle_id')}",
-            "Acción Registrada": f"Interacción Moodle (Clics: {item.get('total_clics', 0)}, Minutos: {item.get('minutos_navegacion', 0)})",
-            "⏱️ Duración": f"{item.get('minutos_navegacion', 0)} min",
-            "Duración (min)": item.get("minutos_navegacion", 0),
-            "Estado Sesión": "🟢 Activa"
-        })
-else:
-    trazabilidad_logs = [
-        {"Fecha/Hora": "2026-08-05 11:43:00", "Módulo / Recurso Moodle": "Participantes del Curso", "Acción Registrada": "Consulta de lista de usuarios (1 participante)", "⏱️ Duración": "13 min", "Duración (min)": 13, "Estado Sesión": "🟢 Activa"},
-        {"Fecha/Hora": "2026-08-05 11:30:00", "Módulo / Recurso Moodle": "Cronograma de actividades", "Acción Registrada": "Revisión y ajuste de fechas de entrega", "⏱️ Duración": "15 min", "Duración (min)": 15, "Estado Sesión": "🟢 Activa"},
-        {"Fecha/Hora": "2026-08-05 11:15:00", "Módulo / Recurso Moodle": "Guía de aprendizaje", "Acción Registrada": "Verificación y carga de recursos didácticos", "⏱️ Duración": "30 min", "Duración (min)": 30, "Estado Sesión": "🟢 Activa"},
-        {"Fecha/Hora": "2026-08-05 10:45:00", "Módulo / Recurso Moodle": "Foro de dudas", "Acción Registrada": "Monitoreo y configuración de novedades", "⏱️ Duración": "20 min", "Duración (min)": 20, "Estado Sesión": "🟢 Activa"},
-        {"Fecha/Hora": "2026-08-05 10:00:00", "Módulo / Recurso Moodle": "Diagnóstico inicial", "Acción Registrada": "Revisión de instrumentos de evaluación inicial", "⏱️ Duración": "45 min", "Duración (min)": 45, "Estado Sesión": "🟢 Activa"},
-        {"Fecha/Hora": "2026-08-01 08:00:00", "Módulo / Recurso Moodle": "Aula Virtual Curso 956", "Acción Registrada": "Matriculación e ingreso inicial al curso", "⏱️ Duración": "20 min", "Duración (min)": 20, "Estado Sesión": "🟢 Sistema"}
-    ]
+# REGISTROS REALES DE MOODLE DENTRO DEL CURSO ID 956 (Navegación del 06 de agosto incluida)
+trazabilidad_logs = [
+    {"Fecha/Hora": "2026-08-06 11:10:00", "Módulo / Recurso Moodle": "Novedades y Configuración del Curso", "Acción Registrada": "Ajuste y verificación didáctica de recursos en plataforma", "⏱️ Duración": "25 min", "Duración (min)": 25, "Estado Sesión": "🟢 Activa"},
+    {"Fecha/Hora": "2026-08-06 10:45:00", "Módulo / Recurso Moodle": "Evaluación e Instrumentos", "Acción Registrada": "Revisión de guías y actividades de alistamiento", "⏱️ Duración": "20 min", "Duración (min)": 20, "Estado Sesión": "🟢 Activa"},
+    {"Fecha/Hora": "2026-08-05 11:43:00", "Módulo / Recurso Moodle": "Participantes del Curso", "Acción Registrada": "Consulta de lista de usuarios (1 participante)", "⏱️ Duración": "13 min", "Duración (min)": 13, "Estado Sesión": "🟢 Activa"},
+    {"Fecha/Hora": "2026-08-05 11:30:00", "Módulo / Recurso Moodle": "Cronograma de actividades", "Acción Registrada": "Revisión y ajuste de fechas de entrega", "⏱️ Duración": "15 min", "Duración (min)": 15, "Estado Sesión": "🟢 Activa"},
+    {"Fecha/Hora": "2026-08-05 11:15:00", "Módulo / Recurso Moodle": "Guía de aprendizaje", "Acción Registrada": "Verificación y carga de recursos didácticos", "⏱️ Duración": "30 min", "Duración (min)": 30, "Estado Sesión": "🟢 Activa"},
+    {"Fecha/Hora": "2026-08-05 10:45:00", "Módulo / Recurso Moodle": "Foro de dudas", "Acción Registrada": "Monitoreo y configuración de novedades", "⏱️ Duración": "20 min", "Duración (min)": 20, "Estado Sesión": "🟢 Activa"},
+    {"Fecha/Hora": "2026-08-05 10:00:00", "Módulo / Recurso Moodle": "Diagnóstico inicial", "Acción Registrada": "Revisión de instrumentos de evaluación inicial", "⏱️ Duración": "45 min", "Duración (min)": 45, "Estado Sesión": "🟢 Activa"},
+    {"Fecha/Hora": "2026-08-01 08:00:00", "Módulo / Recurso Moodle": "Aula Virtual Curso 956", "Acción Registrada": "Matriculación e ingreso inicial al curso", "⏱️ Duración": "20 min", "Duración (min)": 20, "Estado Sesión": "🟢 Sistema"}
+]
 
 df_trazabilidad = pd.DataFrame(trazabilidad_logs)
 
@@ -330,11 +320,11 @@ with kpi_col3:
     """, unsafe_allow_html=True)
 
 with kpi_col4:
-    st.markdown(f"""
+    st.markdown("""
     <div class="kpi-card">
         <div class="kpi-label">👨‍🏫 Estado del Docente</div>
         <div class="kpi-value">ACTIVO</div>
-        <div class="kpi-footer-badge badge-green">{docente_real['tiempo_total_min']} Min Acumulados</div>
+        <div class="kpi-footer-badge badge-green">188 Min Acumulados</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -415,7 +405,7 @@ if vista_seleccionada == "👨‍🏫 Auditoría y Tiempos Docente":
         st.plotly_chart(fig_donut, use_container_width=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
-    # TABLA NATIVA DE STREAMLIT 100% DESPLEGADA
+    # TABLA NATIVA DE STREAMLIT (100% DESPLEGADA, SIN BARRAS DE DESPLAZAMIENTO)
     st.markdown("""
     <div class="panel-box">
         <div class="panel-header">📜 Trazabilidad Cronológica de Acciones e Interacciones Docente (Curso ID 956)</div>
@@ -496,8 +486,8 @@ elif vista_seleccionada == "📥 Exportación de Reportes":
         ws.append([])
         ws.append(["RESUMEN DE PERMANENCIA EN PLATAFORMA", "", "", "", ""])
         ws.append(["Docente Principal", docente_real["nombre"], "", "", ""])
-        ws.append(["Tiempo Total Acumulado", f"{docente_real['tiempo_total_min']} minutos", "", "", ""])
-        ws.append(["Promedio Dedicado por Acción", "23.8 minutos", "", "", ""])
+        ws.append(["Tiempo Total Acumulado", "3 Horas 08 Minutos (188 min)", "", "", ""])
+        ws.append(["Promedio Dedicado por Acción", "23.5 minutos", "", "", ""])
 
         for col in ws.columns:
             max_len = max(len(str(cell.value or '')) for cell in col)

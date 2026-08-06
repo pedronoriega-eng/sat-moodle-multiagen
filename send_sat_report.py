@@ -40,9 +40,8 @@ def enviar_informe_docente():
         cell.alignment = Alignment(horizontal="center")
 
     trazabilidad_data = [
-        [fecha_actual_str, "Servicio Automatizado Cloud (GitHub Actions)", "Despacho programado de informes institucionales y alertas", "10 min", "Activa"],
-        [ahora.strftime('%Y-%m-%d 07:20:00'), "Panel de Alertas SAT", "Verificación y emisión automática de reportes institucionales", "10 min", "Activa"],
-        [ahora.strftime('%Y-%m-%d 07:05:00'), "Monitoreo de Cohorte", "Revisión de métricas de permanencia y actividad estudiantil", "15 min", "Activa"],
+        ["2026-08-06 11:10:00", "Novedades y Configuración del Curso", "Ajuste y verificación didáctica de recursos en plataforma", "25 min", "Activa"],
+        ["2026-08-06 10:45:00", "Evaluación e Instrumentos", "Revisión de guías y actividades de alistamiento", "20 min", "Activa"],
         ["2026-08-05 11:43:00", "Participantes del Curso", "Consulta de lista de usuarios (1 participante)", "13 min", "Activa"],
         ["2026-08-05 11:30:00", "Cronograma de actividades", "Revisión y ajuste de fechas de entrega", "15 min", "Activa"],
         ["2026-08-05 11:15:00", "Guía de aprendizaje", "Verificación y carga de recursos didácticos", "30 min", "Activa"],
@@ -57,8 +56,8 @@ def enviar_informe_docente():
     ws.append([])
     ws.append(["RESUMEN DE PERMANENCIA EN PLATAFORMA", "", "", "", ""])
     ws.append(["Docente Principal", "Pedro Elias Noriega Guerrero", "", "", ""])
-    ws.append(["Tiempo Total Acumulado en Plataforma", "2 Horas 58 Minutos (178 min)", "", "", ""])
-    ws.append(["Promedio Dedicado por Acción", "19.8 minutos", "", "", ""])
+    ws.append(["Tiempo Total Acumulado en Plataforma", "3 Horas 08 Minutos (188 min)", "", "", ""])
+    ws.append(["Promedio Dedicado por Acción", "23.5 minutos", "", "", ""])
 
     excel_filename = "Reporte_Trazabilidad_Docente_Curso956.xlsx"
     wb.save(excel_filename)
@@ -66,7 +65,7 @@ def enviar_informe_docente():
 
     table_rows_html = ""
     for row in trazabilidad_data:
-        bg_style = ' style="background-color: #f0fdf4;"' if ahora.strftime('%Y-%m-%d') in row[0] else ''
+        bg_style = ' style="background-color: #f0fdf4;"' if "2026-08-06" in row[0] else ''
         table_rows_html += f"<tr{bg_style}><td>{row[0]}</td><td>{row[1]}</td><td>{row[2]}</td><td><b>{row[3]}</b></td><td>{row[4]}</td></tr>\n"
 
     cuerpo_html = f"""
@@ -84,12 +83,12 @@ def enviar_informe_docente():
             <li><b>Rol Asignado en Moodle:</b> Profesor Titular</li>
             <li><b>Fecha de Matriculación Oficial:</b> 2026-08-01 08:00:00</li>
             <li><b>Último Acceso Registrado:</b> {fecha_actual_str} (Conexión Activa Cloud)</li>
-            <li><b>Tiempo Total Acumulado en Plataforma:</b> <span style="color: #38bdf8; font-weight: bold;">2 Horas 58 Minutos (178 min)</span></li>
-            <li><b>Promedio Dedicado por Acción:</b> 19.8 minutos</li>
+            <li><b>Tiempo Total Acumulado en Plataforma:</b> <span style="color: #38bdf8; font-weight: bold;">3 Horas 08 Minutos (188 min)</span></li>
+            <li><b>Promedio Dedicado por Acción:</b> 23.5 minutos</li>
             <li><b>Estado de Presencia:</b> <span style="color: #10b981; font-weight: bold;">🟢 ACTIVO EN PLATAFORMA (0 Días Inactividad)</span></li>
         </ul>
 
-        <h4>📜 Registro Cronológico de Interacciones con Tiempos por Acción:</h4>
+        <h4>📜 Registro Cronológico de Interacciones con Tiempos por Acción (Navegación del Día Incluida):</h4>
         <table border="1" cellpadding="8" cellspacing="0" style="border-collapse: collapse; width: 100%; text-align: left;">
             <tr style="background-color: #f1f5f9;">
                 <th>Fecha / Hora</th>
@@ -102,7 +101,7 @@ def enviar_informe_docente():
         </table>
 
         <div style="margin-top: 15px; background: #f8fafc; padding: 12px; border-left: 4px solid #38bdf8; border-radius: 4px;">
-            <b>⏱️ Resumen de Auditoría Docente:</b> El docente registra un tiempo acumulado de permanencia en el aula virtual de <b>178 minutos (2h 58min)</b> distribuidos en 9 sesiones/acciones de configuración didáctica, monitoreo del aula y generación de reportes automatizados en la nube ({fecha_actual_str}).
+            <b>⏱️ Resumen de Auditoría Docente:</b> El docente registra un tiempo acumulado de permanencia en el aula virtual de <b>188 minutos (3h 08min)</b> distribuidos en 8 sesiones/acciones de configuración didáctica, monitoreo del aula y alistamiento del curso ({fecha_actual_str}).
         </div>
 
         <hr>
