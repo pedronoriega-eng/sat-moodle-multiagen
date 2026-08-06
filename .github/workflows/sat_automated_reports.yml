@@ -2,8 +2,8 @@ name: Despacho Automatizado de Informes SAT-V (100% Cloud)
 
 on:
   schedule:
-    # 08:50 AM Colombia (UTC-5) = 13:50 UTC (Todos los días)
-    - cron: '50 13 * * *'
+    # 02:00 PM Colombia (UTC-5) = 19:00 UTC (Todos los días)
+    - cron: '0 19 * * *'
   workflow_dispatch: # Permite ejecutar manualmente desde el panel de GitHub en cualquier momento
 
 jobs:

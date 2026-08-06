@@ -68,7 +68,7 @@ Genera y despacha 2 informes ejecutivos con anexos en Excel:
 * **Archivo de Workflow:** `.github/workflows/sat_automated_reports.yml`
 * **Repositorio GitHub:** `pedronoriega-eng/sat-moodle-multiagen` (rama `main`)
 * **Horario de Disparo Automático:**
-  * Programación diaria en GitHub Actions Cloud: **08:50 AM** (Hora Colombia / UTC-5) (`50 13 * * *` UTC).
+  * Programación diaria en GitHub Actions Cloud: **02:00 PM** (Hora Colombia / UTC-5) (`0 19 * * *` UTC).
 * **Autonomía:** Se ejecuta completamente en los servidores de GitHub en la nube. **No requiere tener abierto el IDE, ni Antigravity, ni mantener encendido el computador local.**
 
 ---
